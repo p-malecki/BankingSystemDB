@@ -1,6 +1,3 @@
 # db_bank_project
 
-
-
-00000
-test123
+Simplified banking system database by Paweł Małecki and Konrad Baran
