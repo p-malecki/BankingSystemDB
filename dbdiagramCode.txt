@@ -9,7 +9,7 @@ TABLE Accounts {
 
 TABLE AccountTypes {
   AccountType INT [Note: 'credit, debit, savings']
-    Describtion NVARCHAR
+  Description NVARCHAR
 }
 REF: AccountTypes.AccountType < Accounts.AccountType
 
@@ -37,7 +37,7 @@ REF: Transfers.Sender < Accounts.AccountID
 
 TABLE TransactionCategories {
   CategoryID INT [pk]
-  Describtion NVARCHAR
+  Description NVARCHAR
 }
 REF: TransactionCategories.CategoryID < Transfers.Category
 
@@ -80,7 +80,7 @@ TABLE ATMs {
   SupervisorDepartment INT
   City NVARCHAR
 }
-REF: ATMs.ATMID > Departments.DepartmentID
+REF: ATMs.SupervisorDepartment > Departments.DepartmentID
 
 TABLE Withdraws {
   OperationID INT [pk]
@@ -116,172 +116,9 @@ REF: StandingOrders.Sender > Accounts.AccountID
 REF: StandingOrders.StandingOrderID < Transfers.StandingOrder
 
 TABLE ATMsMalfunctions {
+  ReportID INT [pk]
   ATMID INT
-  Describtion NVARCHAR
-  Date DATE
-  ReportingEmployee INT
-}
-REF: ATMsMalfunctions.ATMID > ATMs.ATMID
-REF: ATMsMalfunctions.ReportingEmployee > Employees.EmployeeID
-
-TABLE Cards {
-  CardID INT [pk]
-  Account INT
-  Limit INT
-  PIN INT
-}
-REF: Cards.Account > Accounts.AccountID
-
-TABLE Transactions {
-  TransactionID INT [pk]
-  UsedCard INT
-  Receiver INT
-  Amount INT
-  Date DATE
-  Category INT
-}
-REF: Transactions.UsedCard > Cards.CardID
-REF: Transactions.Category > TransactionCategories.CategoryID
-
-TABLE PhoneTransfers {
-  TransferID INT [pk]
-  Sender INT
-  PhoneReceiver INT
-  Amount INT
-  Title NVARCHAR
-  Date DATE
-  Category INT
-}
-REF: PhoneTransfers.Sender > Accounts.AccountID
-REF: PhoneTransfers.Category > TransactionCategories.CategoryID
-REF: PhoneTransfers.PhoneReceiver > Clients.PhoneNumber
-
-TABLE Preferences {
-  ClientID INT [pk]
-  MainAccount INT
-  AllowPhoneTransfer BOOLEAN
-}
-REF: Preferences.ClientID - Clients.ClientID
-REF: Preferences.MainAccount - Accounts.AccountIDTABLE Accounts {
-  AccountID INT [pk]
-  ClientID INT
-  Name NVARCHAR
-  AccountType INT
-  CurrentBalance MONEY
-  
-}
-
-TABLE AccountTypes {
-  AccountType INT [Note: 'credit, debit, savings']
-    Describtion NVARCHAR
-}
-REF: AccountTypes.AccountType < Accounts.AccountType
-
-TABLE Clients {
-  ClientID INT [pk]
-  Name NVARCHAR
-  DateOfBirth DATE
-  City NVARCHAR
-  Country NVARCHAR
-  PhoneNumber INT
-}
-REF: Accounts.ClientID > Clients.ClientID
-
-TABLE Transfers {
-  TransferID INT [pk]
-  Sender INT
-  Receiver INT
-  Amount MONEY
-  Title NVARCHAR
-  Date DATE
-  Category INT
-  StandingOrder INT
-}
-REF: Transfers.Sender < Accounts.AccountID
-
-TABLE TransactionCategories {
-  CategoryID INT [pk]
-  Describtion NVARCHAR
-}
-REF: TransactionCategories.CategoryID < Transfers.Category
-
-TABLE Loans {
-  LoanID INT [pk]
-  AccountID INT
-  Amount MONEY
-  StartDate DATE
-  EndDate DATE
-  ServingEmployee INT
-} 
-REF: Loans.AccountID > Accounts.AccountID
-REF: Loans.ServingEmployee > Employees.EmployeeID
-
-TABLE Employees {
-  EmployeeID INT [pk]
-  Name NVARCHAR
-  DateOfSign DATE
-  DepartmentID INT
-}
-
-TABLE Departments {
-  DepartmentID INT [pk]
-  Name NVARCHAR
-  City NVARCHAR
-  Country NVARCHAR
-}
-REF: Employees.DepartmentID > Departments.DepartmentID
-
-TABLE SavingAccountDetails {
-  AccountID INT [pk, NOTE: 'CHECK TYPE']
-  InterestRate INT
-  Frequency INT
-}
-REF: SavingAccountDetails.AccountID - Accounts.AccountID
-
-TABLE ATMs {
-  ATMID INT [pk]
-  CurrentBalance INT
-  SupervisorDepartment INT
-  City NVARCHAR
-}
-REF: ATMs.ATMID > Departments.DepartmentID
-
-TABLE Withdraws {
-  OperationID INT [pk]
-  Card INT
-  Amount INT
-  ATMID INT
-  Date DATE
-}
-REF: Withdraws.ATMID > ATMs.ATMID
-REF: Withdraws.Card > Cards.CardID
-
-TABLE Deposits {
-  OperationID INT [pk]
-  Card INT
-  Amount INT
-  ATMID INT
-  Date DATE
-}
-REF: Deposits.ATMID > ATMs.ATMID
-REF: Deposits.Card > Cards.CardID
-
-TABLE StandingOrders {
-  StandingOrderID INT [pk]
-  Sender INT
-  Receiver INT
-  Amount MONEY
-  Title NVARCHAR
-  Frequency INT 
-  StartDate DATE
-  EndDate DATE
-}
-REF: StandingOrders.Sender > Accounts.AccountID
-REF: StandingOrders.StandingOrderID < Transfers.StandingOrder
-
-TABLE ATMsMalfunctions {
-  ATMID INT
-  Describtion NVARCHAR
+  Description NVARCHAR
   Date DATE
   ReportingEmployee INT
 }
