@@ -1,21 +1,21 @@
 CREATE TABLE [Clients] (
   [ClientID] INT PRIMARY KEY,
-  [Name] NVARCHAR,
+  [Name] NVARCHAR(100),
   [DateOfBirth] DATE,
-  [City] NVARCHAR,
-  [Country] NVARCHAR,
+  [City] NVARCHAR(100),
+  [Country] NVARCHAR(100),
   [PhoneNumber] INT UNIQUE
 )
 
 CREATE TABLE [AccountTypes] (
   [AccountType] INT PRIMARY KEY,
-  [Description] NVARCHAR
+  [Description] NVARCHAR(100)
 )
 
 CREATE TABLE [Accounts] (
   [AccountID] INT PRIMARY KEY,
   [ClientID] INT FOREIGN KEY REFERENCES [Clients] ([ClientID]),
-  [Name] NVARCHAR,
+  [Name] NVARCHAR(100),
   [AccountType] INT FOREIGN KEY REFERENCES [AccountTypes] ([AccountType]),
   [CurrentBalance] MONEY
 )
@@ -41,14 +41,14 @@ CREATE TABLE [SavingAccountDetails] (
 
 CREATE TABLE [Departments] (
   [DepartmentID] INT PRIMARY KEY,
-  [Name] NVARCHAR,
-  [City] NVARCHAR,
-  [Country] NVARCHAR
+  [Name] NVARCHAR(100),
+  [City] NVARCHAR(100),
+  [Country] NVARCHAR(100)
 )
 
 CREATE TABLE [Employees] (
   [EmployeeID] INT PRIMARY KEY,
-  [Name] NVARCHAR,
+  [Name] NVARCHAR(100),
   [DateOfSign] DATE,
   [DepartmentID] INT FOREIGN KEY REFERENCES [Departments] ([DepartmentID])
 )
@@ -66,13 +66,13 @@ CREATE TABLE [ATMs] (
   [ATMID] INT PRIMARY KEY,
   [CurrentBalance] INT,
   [SupervisorDepartment] INT REFERENCES [Departments] ([DepartmentID]),
-  [City] NVARCHAR
+  [City] NVARCHAR(100)
 )
 
 CREATE TABLE [ATMsMalfunctions] (
   [ReportID] INT PRIMARY KEY,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
-  [Description] NVARCHAR,
+  [Description] NVARCHAR(100),
   [Date] DATE,
   [ReportingEmployee] INT FOREIGN KEY REFERENCES [Employees] ([EmployeeID])
 )
@@ -95,7 +95,7 @@ CREATE TABLE [Deposits] (
 
 CREATE TABLE [TransactionCategories] (
   [CategoryID] INT PRIMARY KEY,
-  [Description] NVARCHAR
+  [Description] NVARCHAR(100)
 )
 
 CREATE TABLE [StandingOrders] (
@@ -103,7 +103,7 @@ CREATE TABLE [StandingOrders] (
   [Sender] INT FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] INT,
   [Amount] MONEY,
-  [Title] NVARCHAR,
+  [Title] NVARCHAR(100),
   [Frequency] INT,
   [StartDate] DATE,
   [EndDate] DATE
@@ -114,7 +114,7 @@ CREATE TABLE [Transfers] (
   [Sender] INT FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] INT,
   [Amount] MONEY,
-  [Title] NVARCHAR,
+  [Title] NVARCHAR(100),
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID]),
   [StandingOrder] INT FOREIGN KEY REFERENCES [StandingOrders] ([StandingOrdersID])
@@ -134,7 +134,7 @@ CREATE TABLE [PhoneTransfers] (
   [Sender] INT FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [PhoneReceiver] INT FOREIGN KEY REFERENCES [Clients] ([PhoneNumber]),
   [Amount] INT,
-  [Title] NVARCHAR,
+  [Title] NVARCHAR(100),
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID])
 )
