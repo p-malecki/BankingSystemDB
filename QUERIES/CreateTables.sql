@@ -17,7 +17,9 @@ CREATE TABLE [Accounts] (
   [ClientID] INT FOREIGN KEY REFERENCES [Clients] ([ClientID]),
   [Name] NVARCHAR(100),
   [AccountType] INT FOREIGN KEY REFERENCES [AccountTypes] ([AccountType]),
-  [CurrentBalance] INT
+  [CurrentBalance] INT,
+  [StartDate] DATE,
+  [EndDate] DATE
 )
 
 CREATE TABLE [Cards] (
