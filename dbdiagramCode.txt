@@ -4,7 +4,8 @@ TABLE Accounts {
   Name NVARCHAR
   AccountType INT
   CurrentBalance MONEY
-  
+  StartDate DATE
+  EndDate DATE
 }
 
 TABLE AccountTypes {
