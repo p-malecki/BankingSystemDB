@@ -1,6 +1,7 @@
 import csv
 import random
 import time
+from datetime import datetime
 import numpy
 import bank_data_import_export
 
@@ -36,6 +37,13 @@ def date_cmp(d1: str, d2: str) -> bool:
     return d1_time <= d2_time
 
 
+def days_range(d1: str, d2: str) -> int:
+    date_format = '%d-%m-%Y'
+    a = datetime.strptime(d1, date_format)
+    b = datetime.strptime(d2, date_format)
+    return (b - a).days
+
+
 clients = bank_data_import_export.import_csv_data('data/clients.csv')
 preferences = bank_data_import_export.import_csv_data('output/preferences.csv')
 accounts = bank_data_import_export.import_csv_data('output/accounts.csv')
@@ -58,6 +66,7 @@ PhoneTransfers_data_output = []
 Transactions_data_output = []
 accounts_end = []  # after all operations
 
+# --------------------------------------------------------------------------phone_transfers
 objects = bank_data_import_export.import_file_data('data/objects.txt')
 verbs = bank_data_import_export.import_file_data('data/verbs.txt')
 operationID = 0
@@ -97,4 +106,59 @@ print(len(PhoneTransfers_data_output))
 # GENERATE
 # bank_data_import_export.export_csv_data('output/phoneTransfers.csv', PhoneTransfers_data_output,
 #                 ['TransferID', 'Sender', 'PhoneReceiver', 'Amount', 'Title', 'Date', 'Category'])
-# bank_data_import_export.export_sql_insert('output/sql_insertions2.sql', PhoneTransfers_data_output, 'PhoneTransfers', [0, 1, 1, 0, 1, 2, 0])
+# bank_data_import_export.export_sql_insert('output/sql_insertions2.sql', PhoneTransfers_data_output, 'PhoneTransfers',
+#                                           [0, 1, 1, 0, 1, 2, 0])
+
+# --------------------------------------------------------------------------StandingOrders
+operationID = 0
+service_list = ['Software services', 'Training services', 'Event planning services', 'Consulting services',
+                'Marketing services', 'Waste management services', 'Construction services', 'Legal services',
+                'Health and wellness services', 'Insurance services', 'Security services', 'Travel services',
+                'Finance services', 'Delivery services']
+
+
+def create_standing_orders(account):
+    global operationID
+
+    amt = random.randint(10, 500)
+    title = random.choice(service_list)
+    sender = account[0]
+    while True:
+        while True:
+            receiver = random.choice(accounts[1:])
+            if sender != receiver[0]:
+                break
+        minDate = account[5] if date_cmp(receiver[5], account[5]) else receiver[5]
+        if account[6] == 'NONE' and receiver[6] == 'NONE':
+            maxDate = '15-1-2023'
+        elif account[6] == 'NONE' or receiver[6] == 'NONE':
+            maxDate = account[6] if receiver[6] == 'NONE' else receiver[6]
+        elif date_cmp(receiver[6], account[6]):
+            maxDate = receiver[6]
+        else:
+            maxDate = account[6]
+        while True:
+            StartDate = random_date(minDate, maxDate)
+            EndDate = random_date(minDate, maxDate)
+            if date_cmp(StartDate, EndDate):
+                break
+        if days_range(StartDate, EndDate) > 30:
+            break
+    Frequency = days_range(StartDate, EndDate) // 30
+    # print('days ', days_range(StartDate, EndDate), Frequency)
+    operationID += 1
+    return [operationID, sender, receiver[0], amt, title, Frequency, StartDate, EndDate]
+
+
+for account in accounts[1:]:
+    for i in range(numpy.random.choice(numpy.arange(0, 5), p=[0.1, 0.2, 0.3, 0.3, 0.1])):
+        StandingOrders_data_output.append(create_standing_orders(account))
+        print(StandingOrders_data_output[-1])
+print(len(StandingOrders_data_output))
+
+# GENERATE
+bank_data_import_export.export_csv_data('output/standingOrders.csv', StandingOrders_data_output,
+                                        ['StandingOrderID', 'Sender', 'Receiver', 'Amount', 'Title', 'Frequency',
+                                         'StartDate', 'EndDate'])
+bank_data_import_export.export_sql_insert('output/sql_insertions3.sql', StandingOrders_data_output, 'StandingOrders',
+                                          [0, 1, 1, 0, 1, 0, 2, 2])
