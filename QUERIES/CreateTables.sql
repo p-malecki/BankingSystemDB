@@ -125,7 +125,7 @@ CREATE TABLE [Transfers] (
 CREATE TABLE [Transactions] (
   [TransactionID] INT PRIMARY KEY,
   [UsedCard] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
-  [Receiver] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
+  [Receiver] NVARCHAR(100),
   [Amount] INT,
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID])
