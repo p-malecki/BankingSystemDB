@@ -37,8 +37,8 @@ CREATE TABLE [Preferences] (
 
 CREATE TABLE [SavingAccountDetails] (
   [AccountID] NVARCHAR(100) PRIMARY KEY REFERENCES [Accounts] ([AccountID]),
-  [InterestRate] INT,
-  [Frequency] INT
+  [InterestRate] NVARCHAR(100),
+  [Frequency] FLOAT
 )
 
 CREATE TABLE [Departments] (
