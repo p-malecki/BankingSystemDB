@@ -236,6 +236,29 @@ for account in accounts[1:]:
         print(Transfers_data_output[-1])
 
 
+def create_transfer_incoming_outside(account):
+    global operationID
+    operationID += 1
+    receiver = account[0]
+    while True:
+        sender = random.choice(outside_ibans)
+        if sender != receiver:
+            break
+    amt = numpy.random.choice([random.randint(200, 1000), random.randint(1000, 2000), random.randint(2000, 5000),
+                               random.randint(5000, 20_000)], p=[0.63, 0.3, 0.05, 0.02])
+    title = random.choice(noun_list)
+    date = random_date(account[5], (account[6] if account[6] != 'NONE' else '15-1-2023'))
+    category = random.randint(1, 19)
+    standingOrder = 'NULL'
+    return [operationID, sender, receiver, amt, title, date, category, standingOrder]
+
+
+for account in accounts[1:]:
+    for i in range(numpy.random.choice(numpy.arange(0, 5), p=[0.1, 0.2, 0.3, 0.3, 0.1])):
+        Transfers_data_output.append(create_transfer_outgoing_outside(account))
+        print(Transfers_data_output[-1])
+
+
 def create_transfer_own(client):
     global operationID
     operationID += 1
@@ -285,7 +308,6 @@ for client in clients_with_accounts:
                 # print(new_transfer)
             else:
                 err_cnt += 1
-print(err_cnt)
 
 
 StandingOrders_data_input = bank_data_import_export.import_csv_data('output/standingOrders.csv')
@@ -313,6 +335,7 @@ def create_transfer_standing_orders(record, output: list):
 for so in StandingOrders_data_input[1:]:
     create_transfer_standing_orders(so, Transfers_data_output)
 
+print('err_cnt', err_cnt)
 print('uncorrect_cnt', uncorrect_cnt)
 print(len(Transfers_data_output))
 # GENERATE
