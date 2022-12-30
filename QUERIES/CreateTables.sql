@@ -103,7 +103,7 @@ CREATE TABLE [TransactionCategories] (
 CREATE TABLE [StandingOrders] (
   [StandingOrdersID] INT PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
-  [Receiver] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
+  [Receiver] NVARCHAR(100),
   [Amount] MONEY,
   [Title] NVARCHAR(100),
   [Frequency] INT,
@@ -114,7 +114,7 @@ CREATE TABLE [StandingOrders] (
 CREATE TABLE [Transfers] (
   [TransferID] INT PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
-  [Receiver] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
+  [Receiver] NVARCHAR(100),
   [Amount] MONEY,
   [Title] NVARCHAR(100),
   [Date] DATE,
@@ -134,7 +134,7 @@ CREATE TABLE [Transactions] (
 CREATE TABLE [PhoneTransfers] (
   [TransferID] INT PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
-  [PhoneReceiver] NVARCHAR(100) FOREIGN KEY REFERENCES [Clients] ([PhoneNumber]),
+  [PhoneReceiver] NVARCHAR(100),
   [Amount] INT,
   [Title] NVARCHAR(100),
   [Date] DATE,
