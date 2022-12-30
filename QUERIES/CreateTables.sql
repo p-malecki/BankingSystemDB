@@ -1,5 +1,5 @@
 CREATE TABLE [Clients] (
-  [ClientID] INT PRIMARY KEY,
+  [ClientID] INT IDENTITY PRIMARY KEY,
   [Name] NVARCHAR(100),
   [DateOfBirth] DATE,
   [City] NVARCHAR(100),
@@ -43,21 +43,21 @@ CREATE TABLE [SavingAccountDetails] (
 )
 
 CREATE TABLE [Departments] (
-  [DepartmentID] INT PRIMARY KEY,
+  [DepartmentID] INT IDENTITY PRIMARY KEY,
   [Name] NVARCHAR(100),
   [City] NVARCHAR(100),
   [Country] NVARCHAR(100)
 )
 
 CREATE TABLE [Employees] (
-  [EmployeeID] INT PRIMARY KEY,
+  [EmployeeID] INT IDENTITY PRIMARY KEY,
   [Name] NVARCHAR(100),
   [DateOfSign] DATE,
   [DepartmentID] INT FOREIGN KEY REFERENCES [Departments] ([DepartmentID])
 )
 
 CREATE TABLE [Loans] (
-  [LoanID] INT PRIMARY KEY,
+  [LoanID] INT IDENTITY PRIMARY KEY,
   [AccountID] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Amount] MONEY,
   [StartDate] DATE,
@@ -66,14 +66,14 @@ CREATE TABLE [Loans] (
 )
 
 CREATE TABLE [ATMs] (
-  [ATMID] INT PRIMARY KEY,
+  [ATMID] INT IDENTITY PRIMARY KEY,
   [CurrentBalance] INT,
   [SupervisorDepartment] INT REFERENCES [Departments] ([DepartmentID]),
   [City] NVARCHAR(100)
 )
 
 CREATE TABLE [ATMsMalfunctions] (
-  [ReportID] INT PRIMARY KEY,
+  [ReportID] INT IDENTITY PRIMARY KEY,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
   [Description] NVARCHAR(100),
   [Date] DATE,
@@ -81,7 +81,7 @@ CREATE TABLE [ATMsMalfunctions] (
 )
 
 CREATE TABLE [Withdraws] (
-  [OperationID] INT PRIMARY KEY,
+  [OperationID] INT IDENTITY PRIMARY KEY,
   [Card] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
   [Amount] INT,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
@@ -89,7 +89,7 @@ CREATE TABLE [Withdraws] (
 )
 
 CREATE TABLE [Deposits] (
-  [OperationID] INT PRIMARY KEY,
+  [OperationID] INT IDENTITY PRIMARY KEY,
   [Card] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
   [Amount] INT,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
@@ -102,7 +102,7 @@ CREATE TABLE [TransactionCategories] (
 )
 
 CREATE TABLE [StandingOrders] (
-  [StandingOrdersID] INT PRIMARY KEY,
+  [StandingOrdersID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] NVARCHAR(100),
   [Amount] MONEY,
@@ -113,7 +113,7 @@ CREATE TABLE [StandingOrders] (
 )
 
 CREATE TABLE [Transfers] (
-  [TransferID] INT PRIMARY KEY,
+  [TransferID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] NVARCHAR(100),
   [Amount] MONEY,
@@ -124,7 +124,7 @@ CREATE TABLE [Transfers] (
 )
 
 CREATE TABLE [Transactions] (
-  [TransactionID] INT PRIMARY KEY,
+  [TransactionID] INT IDENTITY PRIMARY KEY,
   [UsedCard] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
   [Receiver] NVARCHAR(100),
   [Amount] INT,
@@ -133,7 +133,7 @@ CREATE TABLE [Transactions] (
 )
 
 CREATE TABLE [PhoneTransfers] (
-  [TransferID] INT PRIMARY KEY,
+  [TransferID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [PhoneReceiver] NVARCHAR(100),
   [Amount] INT,
