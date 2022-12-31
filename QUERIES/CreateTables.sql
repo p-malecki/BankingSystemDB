@@ -59,7 +59,7 @@ CREATE TABLE [Employees] (
 CREATE TABLE [Loans] (
   [LoanID] INT IDENTITY PRIMARY KEY,
   [AccountID] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
-  [Amount] INT,
+  [Amount] MONEY,
   [StartDate] DATE,
   [EndDate] DATE,
   [ServingEmployee] INT FOREIGN KEY REFERENCES [Employees] ([EmployeeID])
@@ -83,7 +83,7 @@ CREATE TABLE [ATMsMalfunctions] (
 CREATE TABLE [Withdraws] (
   [OperationID] INT IDENTITY PRIMARY KEY,
   [Card] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
-  [Amount] INT,
+  [Amount] MONEY,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
   [Date] DATE
 )
@@ -91,7 +91,7 @@ CREATE TABLE [Withdraws] (
 CREATE TABLE [Deposits] (
   [OperationID] INT IDENTITY PRIMARY KEY,
   [Card] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
-  [Amount] INT,
+  [Amount] MONEY,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
   [Date] DATE
 )
@@ -105,7 +105,7 @@ CREATE TABLE [StandingOrders] (
   [StandingOrdersID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] NVARCHAR(100),
-  [Amount] INT,
+  [Amount] MONEY,
   [Title] NVARCHAR(100),
   [Frequency] INT,
   [StartDate] DATE,
@@ -116,7 +116,7 @@ CREATE TABLE [Transfers] (
   [TransferID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] NVARCHAR(100),
-  [Amount] INT,
+  [Amount] MONEY,
   [Title] NVARCHAR(100),
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID]),
@@ -127,7 +127,7 @@ CREATE TABLE [Transactions] (
   [TransactionID] INT IDENTITY PRIMARY KEY,
   [UsedCard] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
   [Receiver] NVARCHAR(100),
-  [Amount] INT,
+  [Amount] MONEY,
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID])
 )
@@ -136,7 +136,7 @@ CREATE TABLE [PhoneTransfers] (
   [TransferID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [PhoneReceiver] NVARCHAR(100),
-  [Amount] INT,
+  [Amount] MONEY,
   [Title] NVARCHAR(100),
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID])
