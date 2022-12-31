@@ -9,11 +9,18 @@ CREATE PROCEDURE addNewClient
 @allowPhoneTransfers BIT
 AS
 BEGIN
-    INSERT INTO Clients VALUES
-    (@name, @dateOfBirth, @city, @country, @phoneNumber);
-    
-    INSERT INTO Preferences VALUES
-    (@@IDENTITY , NULL, @allowPhoneTransfers)
+	IF @dateOfBirth > GETDATE()
+		RAISERROR('Date of Birth can not be in the future', 17, 1)
+	ELSE IF @dateOfBirth >  CAST(DATEADD(YEAR, -16, GETDATE()) AS DATE)
+		RAISERROR('Client must be older than the age of 16 ', 17, 1)
+	ELSE
+	BEGIN
+		INSERT INTO Clients VALUES
+		(@name, @dateOfBirth, @city, @country, @phoneNumber);
+		
+		INSERT INTO Preferences VALUES
+		(@@IDENTITY , NULL, @allowPhoneTransfers)
+	END
 END
 GO
 
@@ -217,6 +224,8 @@ AS
 BEGIN
 	IF LEN(@name) < 2
 		RAISERROR('To short name', 17, 1)
+	ELSE IF @dateOfSign > GETDATE()
+		RAISERROR('Date can not be in the future', 17, 1)
 	ELSE
 		INSERT INTO Employees VALUES
 		(@name, @dateOfSign, @departmentID)
@@ -323,5 +332,35 @@ BEGIN
 	ELSE
 		INSERT INTO ATMsMalfunctions VALUES
 		(@ATMID, @description, GETDATE(), @reportingEmployee)
+END
+GO
+
+DROP PROCEDURE IF EXISTS addStandingOrders
+GO
+CREATE PROCEDURE addStandingOrders
+@sender NVARCHAR(100),
+@receiver NVARCHAR(100),
+@amount MONEY,
+@title NVARCHAR(100),
+@frequency INT,
+@startDate DATE,
+@endDate DATE
+AS
+BEGIN
+	IF @sender = @receiver OR @endDate = @startDate
+		RAISERROR('Incorrect operation',17,1)
+	ELSE IF @amount <= 0
+		RAISERROR('Incorrect amount',17,1)
+	ELSE IF @frequency <= 0 OR @frequency > (DATEDIFF(day, @startDate, @endDate))
+		RAISERROR('Incorrect frequency',17,1) 
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
+			RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @startDate < GETDATE()
+		RAISERROR('Start date can not be in the past', 17, 1)
+	ELSE IF @endDate < GETDATE()
+		RAISERROR('End date can not be in the past', 17, 1)
+	ELSE
+		INSERT INTO StandingOrders VALUES
+		(@sender, @receiver, @amount, @title, @frequency, @startDate, @endDate)
 END
 GO
