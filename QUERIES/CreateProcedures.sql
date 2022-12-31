@@ -43,7 +43,7 @@ BEGIN
 			WHERE ClientID = @clientID
 		END
 
-		IF @accountType = 2
+		IF @accountType = 3
 		BEGIN
 			INSERT INTO SavingAccountDetails VALUES
 			(@accountID, @interestRate, @frequency)
