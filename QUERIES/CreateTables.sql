@@ -59,7 +59,7 @@ CREATE TABLE [Employees] (
 CREATE TABLE [Loans] (
   [LoanID] INT IDENTITY PRIMARY KEY,
   [AccountID] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
-  [Amount] MONEY,
+  [Amount] INT,
   [StartDate] DATE,
   [EndDate] DATE,
   [ServingEmployee] INT FOREIGN KEY REFERENCES [Employees] ([EmployeeID])
@@ -105,7 +105,7 @@ CREATE TABLE [StandingOrders] (
   [StandingOrdersID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] NVARCHAR(100),
-  [Amount] MONEY,
+  [Amount] INT,
   [Title] NVARCHAR(100),
   [Frequency] INT,
   [StartDate] DATE,
@@ -116,7 +116,7 @@ CREATE TABLE [Transfers] (
   [TransferID] INT IDENTITY PRIMARY KEY,
   [Sender] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Receiver] NVARCHAR(100),
-  [Amount] MONEY,
+  [Amount] INT,
   [Title] NVARCHAR(100),
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID]),
