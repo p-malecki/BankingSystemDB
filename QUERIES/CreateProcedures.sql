@@ -275,3 +275,25 @@ BEGIN
 		RAISERROR('To short description', 17, 1)
 END
 GO
+
+DROP PROCEDURE IF EXISTS makeLoan
+GO
+CREATE PROCEDURE makeLoan
+@accountID NVARCHAR(100),
+@amount MONEY,
+@endDate DATE,
+@servingEmployee INT
+AS
+BEGIN
+	IF @amount <= 0
+		RAISERROR('Incorrect amount', 17 ,1)
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
+		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF NOT EXISTS(SELECT * FROM Employees WHERE EmployeeID = @servingEmployee)
+		RAISERROR('Employee does not exist',17,1)
+	ELSE IF @endDate < GETDATE()
+		RAISERROR('Date can not be in the past', 17, 1)
+	ELSE
+		INSERT INTO Loans VALUES
+		(@accountID, @amount, GETDATE(), @endDate, @servingEmployee)
+END

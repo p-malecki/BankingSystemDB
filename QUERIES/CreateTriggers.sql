@@ -96,3 +96,16 @@ BEGIN
     END
 END
 GO
+
+CREATE TRIGGER newLoan
+ON dbo.Loans
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Accounts
+    SET CurrentBalance = A.CurrentBalance + i.Amount
+    FROM Accounts A
+    JOIN inserted i ON i.AccountID = A.AccountID
+    WHERE i.EndDate > GETDATE()
+END
+GO
