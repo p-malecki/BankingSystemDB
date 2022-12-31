@@ -26,20 +26,22 @@ CREATE PROCEDURE addNewAccount
 @accountType INT,
 @password NVARCHAR(100)
 AS
-IF LEN(@password) < 20
-	BEGIN
+BEGIN
+	IF LEN(@password) < 20
 		RAISERROR('Password not strong enough',17,1);
-	END
-ELSE
+	ELSE
 	BEGIN
 		INSERT INTO Accounts VALUES
 		(@accountID, @clientID, @name, @accountType, 0, CAST(GETDATE() AS Date), NULL, @password)
 
 		IF (SELECT MainAccount FROM Preferences WHERE ClientID = @clientID) IS NULL
+		BEGIN
 			UPDATE Preferences
 			SET MainAccount = @accountID
 			WHERE ClientID = @clientID
+		END
 	END
+END
 GO
 
 DROP PROCEDURE IF EXISTS addNewCard
@@ -50,16 +52,14 @@ CREATE PROCEDURE addNewCard
 @limit INT,
 @pin INT
 AS
-IF (SELECT EndDate FROM Accounts WHERE AccountID = @account) IS NOT NULL
-		RAISERROR('Account has been closed', 17 ,1)
-ELSE IF @limit < 0
 BEGIN
-	RAISERROR('Incorrect limit',17,1);
-END
-ELSE
-BEGIN
-    INSERT INTO Cards VALUES
-    (@cardID, @account, @limit, @pin);
+	IF (SELECT EndDate FROM Accounts WHERE AccountID = @account) IS NOT NULL
+			RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @limit < 0
+		RAISERROR('Incorrect limit',17,1);
+	ELSE
+		INSERT INTO Cards VALUES
+		(@cardID, @account, @limit, @pin);
 END
 GO
 
@@ -72,26 +72,20 @@ CREATE PROCEDURE addNewTransfer
 @title NVARCHAR(100),
 @category INT
 AS
-IF @amount <= 0
 BEGIN
-	RAISERROR('Incorrect amount',17,1)
-END
-ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
-		RAISERROR('Account has been closed', 17 ,1)
-ELSE IF ( SELECT CurrentBalance
-		FROM Accounts
-		WHERE AccountID = @sender ) < @amount
-BEGIN
-	RAISERROR('Not enough funds',17,1)
-END
-ELSE IF @sender = @receiver
-BEGIN
-	RAISERROR('Incorrect operation',17,1)
-END
-ELSE
-BEGIN
-    INSERT INTO Transfers VALUES
-    (@sender, @receiver, @amount, @title, CAST(GETDATE() AS Date), @category, NULL)
+	IF @amount <= 0
+		RAISERROR('Incorrect amount',17,1)
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
+			RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF ( SELECT CurrentBalance
+			FROM Accounts
+			WHERE AccountID = @sender ) < @amount
+		RAISERROR('Not enough funds',17,1)
+	ELSE IF @sender = @receiver
+		RAISERROR('Incorrect operation',17,1)
+	ELSE
+		INSERT INTO Transfers VALUES
+		(@sender, @receiver, @amount, @title, CAST(GETDATE() AS Date), @category, NULL)
 END
 GO
 
@@ -104,36 +98,28 @@ CREATE PROCEDURE addNewPhoneTransfer
 @title NVARCHAR(100),
 @category INT
 AS
-IF @amount <= 0
 BEGIN
-	RAISERROR('Incorrect amount',17,1)
-END
-ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
-		RAISERROR('Account has been closed', 17 ,1)
-ELSE IF ( SELECT CurrentBalance
-		FROM Accounts
-		WHERE AccountID = @sender ) < @amount
-BEGIN
-	RAISERROR('Not enough funds',17,1)
-END
-ELSE IF ( SELECT AllowPhoneTransfer
-		FROM Preferences P
-		JOIN Clients C ON C.ClientID = P.ClientID
-		WHERE C.PhoneNumber = @phoneReceiver ) = 0
-BEGIN
-	RAISERROR('Receiver does not accept phoneTransfers',17,1)
-END
-ELSE IF ( SELECT MainAccount
-		FROM Preferences P
-		JOIN Clients C ON C.ClientID = P.ClientID
-		WHERE C.PhoneNumber = @phoneReceiver ) = @sender
-BEGIN
-	RAISERROR('Incorrect operation',17,1)
-END
-ELSE
-BEGIN
-	INSERT INTO PhoneTransfers VALUES
-	(@sender, @phoneReceiver, @amount, @title, CAST(GETDATE() AS Date), @category)
+	IF @amount <= 0
+		RAISERROR('Incorrect amount',17,1)
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
+			RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF ( SELECT CurrentBalance
+			FROM Accounts
+			WHERE AccountID = @sender ) < @amount
+		RAISERROR('Not enough funds',17,1)
+	ELSE IF ( SELECT AllowPhoneTransfer
+			FROM Preferences P
+			JOIN Clients C ON C.ClientID = P.ClientID
+			WHERE C.PhoneNumber = @phoneReceiver ) = 0
+		RAISERROR('Receiver does not accept phoneTransfers',17,1)
+	ELSE IF ( SELECT MainAccount
+			FROM Preferences P
+			JOIN Clients C ON C.ClientID = P.ClientID
+			WHERE C.PhoneNumber = @phoneReceiver ) = @sender
+		RAISERROR('Incorrect operation',17,1)
+	ELSE
+		INSERT INTO PhoneTransfers VALUES
+		(@sender, @phoneReceiver, @amount, @title, CAST(GETDATE() AS Date), @category)
 END
 GO
 
@@ -211,3 +197,81 @@ BEGIN
 		INSERT INTO Transactions VALUES
 		(@card, @receiver, @amount, GETDATE(), @category)
 END
+
+DROP PROCEDURE addNewEmployee
+GO
+CREATE PROCEDURE addNewEmployee
+@name NVARCHAR(100),
+@dateOfSign DATE,
+@departmentID INT
+AS
+BEGIN
+	IF LEN(@name) < 2
+		RAISERROR('To short name', 17, 1)
+	ELSE
+		INSERT INTO Employees VALUES
+		(@name, @dateOfSign, @departmentID)
+END
+GO
+
+DROP PROCEDURE addNewDepartments
+GO
+CREATE PROCEDURE addNewDepartments
+@name NVARCHAR(100),
+@city NVARCHAR(100),
+@country NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@name) < 2 OR LEN(@city) < 2 OR LEN(@city) < 2
+		RAISERROR('To short parameters', 17, 1)
+	ELSE
+		INSERT INTO Departments VALUES
+		(@name, @city, @country)
+END
+GO
+
+DROP PROCEDURE addNewATM
+GO
+CREATE PROCEDURE addNewATM
+@currentBalance INT,
+@supervisorDepartment INT,
+@city NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@city) < 2
+		RAISERROR('To short city name', 17, 1)
+	ELSE IF @currentBalance < 0
+		RAISERROR('Incorrect current balance', 17, 1)
+	ELSE
+		INSERT INTO ATMs VALUES
+		(@currentBalance, @supervisorDepartment, @city)
+END
+GO
+
+DROP PROCEDURE addNewTransactionCategory
+GO
+CREATE PROCEDURE addNewTransactionCategory
+@description NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@description) >= 2
+		INSERT INTO TransactionCategories VALUES
+		(@description)
+	ELSE
+		RAISERROR('To short description', 17, 1)
+END
+GO
+
+DROP PROCEDURE addNewAccountType
+GO
+CREATE PROCEDURE addNewAccountType
+@description NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@description) >= 2
+		INSERT INTO AccountTypes VALUES
+		(@description)
+	ELSE
+		RAISERROR('To short description', 17, 1)
+END
+GO

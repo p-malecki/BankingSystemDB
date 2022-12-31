@@ -8,7 +8,7 @@ CREATE TABLE [Clients] (
 )
 
 CREATE TABLE [AccountTypes] (
-  [AccountType] INT PRIMARY KEY,
+  [AccountType] INT IDENTITY PRIMARY KEY,
   [Description] NVARCHAR(100)
 )
 
@@ -97,7 +97,7 @@ CREATE TABLE [Deposits] (
 )
 
 CREATE TABLE [TransactionCategories] (
-  [CategoryID] INT PRIMARY KEY,
+  [CategoryID] INT IDENTITY PRIMARY KEY,
   [Description] NVARCHAR(100)
 )
 

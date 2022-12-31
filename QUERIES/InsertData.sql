@@ -589,12 +589,13 @@ INSERT INTO [Clients] (ClientID, Name, DateOfBirth, City, Country, PhoneNumber) 
 (250,'Bobbie Rosenthal',CONVERT(DATE,'21-01-1988',105),'Kętrzyn','Poland','+48736787227')
 SET IDENTITY_INSERT [Clients] OFF
 
-INSERT INTO [AccountTypes] VALUES
+SET IDENTITY_INSERT [AccountTypes] ON
+INSERT INTO [AccountTypes] (AccountType, Description)  VALUES
 (1,'personal'),
 (2,'for minors'),
 (3,'saving'),
 (4,'business')
-
+SET IDENTITY_INSERT [AccountTypes] OFF
 
 INSERT INTO [Accounts] VALUES
 ('AD9413090105NCMC3VM1EDKD',1,'Cardguard',1,0,CONVERT(DATE,'22-11-2021',105),CONVERT(DATE,'21-08-2022',105),'AHIMGGAOkpo73zRml6mI'),
@@ -1808,7 +1809,8 @@ INSERT INTO [Cards] VALUES
 ('30154537228438','SI90561448213410524',0,'1876'),
 ('3531018699110411','SI90561448213410524',0,'0442')
 
-INSERT INTO [TransactionCategories] VALUES
+SET IDENTITY_INSERT [TransactionCategories] ON
+INSERT INTO [TransactionCategories] (CategoryID, Description) VALUES
 (1,'Income'),
 (2,'Housing'),
 (3,'Home Services'),
@@ -1828,6 +1830,7 @@ INSERT INTO [TransactionCategories] VALUES
 (17,'Charitable Giving'),
 (18,'Investing'),
 (19,'Debt Payments')
+SET IDENTITY_INSERT [TransactionCategories] OFF
 
 SET IDENTITY_INSERT [Deposits] ON
 INSERT INTO [Deposits] (OperationID, Card, Amount, ATMID, [Date]) VALUES
