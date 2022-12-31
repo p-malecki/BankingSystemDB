@@ -85,3 +85,19 @@ EXEC sp_add_jobstep
     @retry_attempts = 5,  
     @retry_interval = 5;  
 GO  
+
+IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkSavingAcoounts')
+    EXEC sp_delete_job @job_name = 'checkSavingAcoounts'
+GO
+EXEC sp_add_job
+    @job_name = 'checkSavingAcoounts'
+GO
+
+EXEC sp_add_jobstep  
+    @job_name = N'checkSavingAcoounts',  
+    @step_name = N'CheckSavingAcoounts',  
+    @subsystem = N'TSQL',  
+    @command = N'EXEC checkSavingAccounts',   
+    @retry_attempts = 5,  
+    @retry_interval = 5;  
+GO  
