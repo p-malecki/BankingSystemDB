@@ -24,7 +24,9 @@ CREATE PROCEDURE addNewAccount
 @clientID INT,
 @name NVARCHAR(100),
 @accountType INT,
-@password NVARCHAR(100)
+@password NVARCHAR(100),
+@interestRate FLOAT = 1.0,
+@frequency NVARCHAR(100) = 'monthly'
 AS
 BEGIN
 	IF LEN(@password) < 20
@@ -39,6 +41,12 @@ BEGIN
 			UPDATE Preferences
 			SET MainAccount = @accountID
 			WHERE ClientID = @clientID
+		END
+
+		IF @accountType = 2
+		BEGIN
+			INSERT INTO SavingAccountDetails VALUES
+			(@accountID, @interestRate, @frequency)
 		END
 	END
 END
@@ -197,8 +205,9 @@ BEGIN
 		INSERT INTO Transactions VALUES
 		(@card, @receiver, @amount, GETDATE(), @category)
 END
+GO
 
-DROP PROCEDURE addNewEmployee
+DROP PROCEDURE IF EXISTS addNewEmployee
 GO
 CREATE PROCEDURE addNewEmployee
 @name NVARCHAR(100),
@@ -214,7 +223,7 @@ BEGIN
 END
 GO
 
-DROP PROCEDURE addNewDepartments
+DROP PROCEDURE IF EXISTS addNewDepartments
 GO
 CREATE PROCEDURE addNewDepartments
 @name NVARCHAR(100),
@@ -230,7 +239,7 @@ BEGIN
 END
 GO
 
-DROP PROCEDURE addNewATM
+DROP PROCEDURE IF EXISTS addNewATM
 GO
 CREATE PROCEDURE addNewATM
 @currentBalance INT,
@@ -248,7 +257,7 @@ BEGIN
 END
 GO
 
-DROP PROCEDURE addNewTransactionCategory
+DROP PROCEDURE IF EXISTS addNewTransactionCategory
 GO
 CREATE PROCEDURE addNewTransactionCategory
 @description NVARCHAR(100)
@@ -262,7 +271,7 @@ BEGIN
 END
 GO
 
-DROP PROCEDURE addNewAccountType
+DROP PROCEDURE IF EXISTS addNewAccountType
 GO
 CREATE PROCEDURE addNewAccountType
 @description NVARCHAR(100)
@@ -297,3 +306,22 @@ BEGIN
 		INSERT INTO Loans VALUES
 		(@accountID, @amount, GETDATE(), @endDate, @servingEmployee)
 END
+GO
+
+DROP PROCEDURE IF EXISTS reportATMsMalfunction
+GO
+CREATE PROCEDURE reportATMsMalfunction
+@ATMID INT,
+@description NVARCHAR(100),
+@reportingEmployee INT
+AS
+BEGIN
+	IF NOT EXISTS(SELECT * FROM ATMs WHERE ATMID = @ATMID)
+		RAISERROR('ATM does not exist',17,1)
+	ELSE IF NOT EXISTS(SELECT * FROM Employees WHERE EmployeeID = @reportingEmployee)
+		RAISERROR('Employee does not exist',17,1)
+	ELSE
+		INSERT INTO ATMsMalfunctions VALUES
+		(@ATMID, @description, GETDATE(), @reportingEmployee)
+END
+GO
