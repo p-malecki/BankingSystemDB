@@ -40,7 +40,7 @@ BEGIN
         DECLARE @amount MONEY = CAST(@balance * @frequency AS MONEY)
         
        INSERT INTO Transfers VALUES
-       ('JAKIES KONTO',@account,@amount,'Saving Account Income',GETDATE(),1,NULL)
+       ('BANK',@account,@amount,'Saving Account Income',GETDATE(),1,NULL)
        SET @rowCount = @rowCount - 1
     END 
 END
