@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="250.0" spacing="30.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbproject.dbprojectgui.HelloController">
+
+    <Button fx:id="clientButton" minWidth="200.0" prefHeight="30.0" text="Log in as client"
+        onAction="#onClickClient">
+      <font>
+         <Font size="16.0" />
+      </font>
+    </Button>
+    <Button fx:id="adminButton" minWidth="200.0" prefHeight="30.0" text="Log in as admin"
+        onAction="#onClickAdmin">
+        <font>
+            <Font size="16.0" />
+        </font>
+    </Button>
+</VBox>

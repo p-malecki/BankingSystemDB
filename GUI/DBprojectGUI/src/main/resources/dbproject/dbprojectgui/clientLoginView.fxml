@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbproject.dbprojectgui.LoginController">
+    <center>
+        <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+            <children>
+                <HBox alignment="CENTER" prefHeight="50.0" prefWidth="400.0" spacing="10.0">
+                    <children>
+                        <Label text="AccountID" />
+                        <TextField fx:id="accountField" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" prefHeight="50.0" prefWidth="400.0" spacing="10.0">
+                    <children>
+                        <Label text="Password" />
+                        <PasswordField fx:id="passwordField" />
+                    </children>
+                </HBox>
+                <Label fx:id="errorLabel" text="Login or password is incorrect" textFill="RED" visible="false" />
+            </children>
+        </VBox>
+    </center>
+    <bottom>
+        <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <buttons>
+                <Button onAction="#onClickLogin" text="Login" />
+                <Button text="Cancel" onAction="#onClickCancel" />
+            </buttons>
+            <padding>
+                <Insets right="30.0" />
+            </padding>
+        </ButtonBar>
+    </bottom>
+</BorderPane>

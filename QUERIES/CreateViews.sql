@@ -206,3 +206,20 @@ RETURN(
 )
 END
 GO
+
+IF OBJECT_ID('IfAccountExists', 'FN') IS NOT NULL
+DROP FUNCTION IfAccountExists
+GO
+CREATE FUNCTION IfAccountExists(
+    @account NVARCHAR(100)
+)
+RETURNS BIT
+AS
+BEGIN
+RETURN(
+    SELECT IIF('AD0357942949XKSMVLBOOIBA' IN (
+        SELECT AccountID
+        FROM Accounts), 1, 0)
+)
+END
+GO
