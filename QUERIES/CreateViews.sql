@@ -189,3 +189,20 @@ RETURN(
     JOIN NumberOfOperationsByCard N ON N.Card = C.CardID
 )
 GO
+
+IF OBJECT_ID('GetPassword', 'FN') IS NOT NULL
+DROP FUNCTION GetPassword
+GO
+CREATE FUNCTION GetPassword(
+    @account NVARCHAR(100)
+)
+RETURNS NVARCHAR(100)
+AS
+BEGIN
+RETURN(
+    SELECT [Password]
+    FROM Accounts
+    WHERE AccountID = @account
+)
+END
+GO
