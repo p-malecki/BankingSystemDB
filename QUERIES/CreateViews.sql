@@ -88,3 +88,104 @@ RETURN(
     FROM AllOperations
     WHERE AccountID = @account
 )
+GO
+
+IF OBJECT_ID('AccountOperationsByMonth', 'IF') IS NOT NULL
+DROP FUNCTION AccountOperationsByMonth 
+GO
+CREATE FUNCTION AccountOperationsByMonth(
+    @account NVARCHAR(100)
+)
+RETURNS TABLE
+AS
+RETURN(
+    SELECT MONTH([Date]) 'Month',
+    YEAR([Date]) 'Year',
+    COUNT(*) 'Operations'
+    FROM AccountHistory(@account)
+    GROUP BY MONTH([Date]), YEAR([Date])
+)
+GO
+
+IF OBJECT_ID('ClientOperationsByMonth', 'IF') IS NOT NULL
+DROP FUNCTION ClientOperationsByMonth 
+GO
+CREATE FUNCTION ClientOperationsByMonth(
+    @client INT
+)
+RETURNS TABLE
+AS
+RETURN(
+    SELECT MONTH([Date]) 'Month', YEAR([Date]) 'Year',
+    COUNT(*) 'Operations'
+    FROM Accounts A
+    JOIN AllOperations AO ON AO.AccountID = A.AccountID
+    WHERE ClientID = @client
+    GROUP BY MONTH([Date]), YEAR([Date])
+)
+GO
+
+IF OBJECT_ID('ATMOperationsByMonth', 'IF') IS NOT NULL
+DROP FUNCTION ATMOperationsByMonth 
+GO
+CREATE FUNCTION ATMOperationsByMonth(
+    @atm INT
+)
+RETURNS TABLE
+AS
+RETURN(
+    SELECT MONTH([Date]) 'Month', YEAR([Date]) 'Year',
+    COUNT(*) 'Operations'
+    FROM(
+        SELECT *
+        FROM Withdraws
+
+        UNION ALL
+
+        SELECT *
+        FROM Deposits
+    ) Operations 
+    WHERE ATMID = @atm
+    GROUP BY MONTH([Date]), YEAR([Date])
+)
+GO
+
+IF OBJECT_ID('NumberOfOperationsByCard', 'V') IS NOT NULL
+DROP VIEW NumberOfOperationsByCard 
+GO
+CREATE VIEW NumberOfOperationsByCard AS(
+    SELECT Card,
+        COUNT(*) 'Operations'
+    FROM(
+        SELECT Card, Amount, [Date]
+        FROM Withdraws
+
+        UNION ALL
+
+        SELECT Card, Amount, [Date]
+        FROM Withdraws
+
+        UNION ALL
+
+        SELECT UsedCard, Amount, [Date]
+        FROM Transactions
+    ) CardOperations
+    GROUP BY Card
+)
+GO
+
+IF OBJECT_ID('ClientOperationsByCard', 'IF') IS NOT NULL
+DROP FUNCTION ClientOperationsByCard 
+GO
+CREATE FUNCTION ClientOperationsByCard(
+    @client INT
+)
+RETURNS TABLE
+AS
+RETURN(
+    SELECT A.ClientID, C.CardID, N.Operations
+    FROM Accounts A
+    JOIN Cards C ON C.Account = A.AccountID
+    JOIN NumberOfOperationsByCard N ON N.Card = C.CardID
+)
+GO
