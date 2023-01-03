@@ -35,15 +35,15 @@ public class LoginController implements Initializable{
     }
 
     public boolean checkData() throws SQLException{
-        String login = accountField.getText();
-        String password = passwordField.getText();
+//        String login = accountField.getText();
+        String login = "SI90561448213410524";
+//        String password = passwordField.getText();
+        String password = "wO1urKZBYjFP3K7vg6Xb";
 
-        String query = "SELECT dbo.IfAccountExists('" + login + "')";
-        ResultSet rsLogin = statement.executeQuery(query);
-        if(rsLogin.next() && rsLogin.getString(1) != null && rsLogin.getString(1).equals("1")){
-            query = "SELECT dbo.GetPassword('" + login + "')";
-            ResultSet rsPassword = statement.executeQuery(query);
-            if(rsPassword.next() && rsPassword.getString(1) != null && rsPassword.getString(1).equals(password)){
+        String query = "SELECT dbo.IfAccountExists('" + login + "'), dbo.GetPassword('" + login + "')";
+        ResultSet rs = statement.executeQuery(query);
+        if(rs.next()){
+            if(rs.getString(1).equals("1") && rs.getString(2).equals(password)){
                 account = login;
                 return true;
             }

@@ -217,7 +217,7 @@ RETURNS BIT
 AS
 BEGIN
 RETURN(
-    SELECT IIF('AD0357942949XKSMVLBOOIBA' IN (
+    SELECT IIF(@account IN (
         SELECT AccountID
         FROM Accounts), 1, 0)
 )

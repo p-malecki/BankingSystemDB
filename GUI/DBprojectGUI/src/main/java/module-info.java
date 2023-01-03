@@ -5,4 +5,6 @@ module dbproject.dbprojectgui {
 
     opens dbproject.dbprojectgui to javafx.fxml;
     exports dbproject.dbprojectgui;
+    exports dbproject.dbprojectgui.operations;
+    opens dbproject.dbprojectgui.operations to javafx.fxml;
 }

@@ -57,10 +57,33 @@ public class HelloController implements Initializable{
             loggedIn.setHeaderText("Logged in successfully!");
             loggedIn.setContentText("You have successfully logged in on account " + result);
             loggedIn.showAndWait();
+            controlClient(result);
         }
     }
 
     public void onClickAdmin(){
         System.out.println("admin");
+    }
+
+    public void controlClient(String account){
+        System.out.println("Opening client's control panel for " + account);
+        Dialog<ButtonType> clientPanel = new Dialog<>();
+        clientPanel.initOwner(clientButton.getScene().getWindow());
+        clientPanel.setTitle("Client control panel");
+        clientPanel.getDialogPane().getScene().getWindow()
+                .setOnCloseRequest(windowEvent -> clientPanel.getDialogPane().getScene().getWindow().hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("clientPanelView.fxml"));
+        try{
+            clientPanel.getDialogPane().setContent(fxmlLoader.load());
+        }
+        catch(IOException e){
+            System.out.println("Could not load clientPanelView");
+            return;
+        }
+        ClientPanelController controller = fxmlLoader.getController();
+        controller.loadData(account);
+        clientPanel.show();
     }
 }

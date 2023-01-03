@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dbproject.dbprojectgui.ClientPanelController">
+    <top>
+        <GridPane alignment="CENTER" prefHeight="60.0" prefWidth="600.0" style="-fx-background-color: eeeeee;"
+                  BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="325.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Label fx:id="nameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="20.0" prefWidth="140.0"
+                   text="NAME">
+                <font>
+                    <Font name="System Italic" size="15.0"/>
+                </font>
+            </Label>
+            <Label fx:id="accountLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="20.0" prefWidth="325.0"
+                   text="ACCOUNTID" GridPane.columnIndex="1">
+                <font>
+                    <Font name="System Bold" size="18.0"/>
+                </font>
+            </Label>
+            <Label fx:id="balanceLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="20.0" prefWidth="140.0"
+                   text="BALANCE" GridPane.columnIndex="2">
+                <font>
+                    <Font size="15.0"/>
+                </font>
+            </Label>
+        </GridPane>
+    </top>
+    <center>
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" BorderPane.alignment="CENTER">
+            <Button prefHeight="25.0" prefWidth="200.0" text="Display account history" onAction="#viewAccountHistory"/>
+            <Button prefHeight="25.0" prefWidth="200.0" text="Display operations by month" onAction="#viewOperationsByMonth"/>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+                <ChoiceBox>
+
+                </ChoiceBox>
+                <Button text="Perform operation"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
