@@ -62,7 +62,8 @@ public class HelloController implements Initializable{
     }
 
     public void onClickAdmin(){
-        System.out.println("admin");
+        System.out.println("Admin logging in...");
+        controlAdmin();
     }
 
     public void controlClient(String account){
@@ -85,5 +86,25 @@ public class HelloController implements Initializable{
         ClientPanelController controller = fxmlLoader.getController();
         controller.loadData(account);
         clientPanel.show();
+    }
+
+    public void controlAdmin(){
+        Dialog<ButtonType> adminPanel = new Dialog<>();
+        adminPanel.initOwner(clientButton.getScene().getWindow());
+        adminPanel.setTitle("Admin control panel");
+        adminPanel.getDialogPane().getScene().getWindow()
+                .setOnCloseRequest(windowEvent -> adminPanel.getDialogPane().getScene().getWindow().hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("adminPanelView.fxml"));
+        try{
+            adminPanel.getDialogPane().setContent(fxmlLoader.load());
+        }
+        catch(IOException e){
+            System.out.println("Could not load adminPanelView");
+            return;
+        }
+
+        adminPanel.show();
     }
 }

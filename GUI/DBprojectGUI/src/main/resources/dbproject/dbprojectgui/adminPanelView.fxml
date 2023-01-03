@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dbproject.dbprojectgui.AdminPanelController">
+    <top>
+        <Pane prefHeight="55.0" prefWidth="600.0" style="-fx-background-color: eeeeee;" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="adminLabel" layoutX="228.0" layoutY="10.0" text="Admin panel">
+                    <font>
+                        <Font name="System Bold" size="24.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+    </top>
+    <center>
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display all operations" fx:id="allOperationsButton"
+                        onAction="#allOperationsOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display chosen client" fx:id="chosenClientButton"
+                        onAction="#chosenClientOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display ATM by month" fx:id="atmByMonthButton"
+                        onAction="#atmByMonthOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Report ATM malfunction"
+                        fx:id="reportAtmMalfunctionButton" onAction="#reportAtmMalfunctionOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Add new client" fx:id="addNewClientButton"
+                        onAction="#newClientOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Add new account" fx:id="addNewAccountButton"
+                        onAction="#newAccountOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Add new employee" fx:id="addNewEmployeeButton"
+                        onAction="#newEmployeeOnClick"/>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
