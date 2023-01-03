@@ -1,18 +1,18 @@
 package dbproject.dbprojectgui;
 
+import dbproject.dbprojectgui.operations.OperationSetupController;
 import dbproject.dbprojectgui.operations.TableViewController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class ClientPanelController implements Initializable{
@@ -22,7 +22,13 @@ public class ClientPanelController implements Initializable{
     private Label accountLabel;
     @FXML
     private Label balanceLabel;
+    @FXML
+    private ChoiceBox operationsChoiceBox;
+    @FXML
+    private Button operationButton;
+
     private Statement statement;
+    private String accountID;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
@@ -35,6 +41,8 @@ public class ClientPanelController implements Initializable{
             System.out.println("Failed to create the statement");
             throw new RuntimeException(e);
         }
+
+        operationButton.setDisable(true);
     }
 
     public void loadData(String account){
@@ -49,6 +57,7 @@ public class ClientPanelController implements Initializable{
 
                 nameLabel.setText(name);
                 accountLabel.setText(accountID);
+                this.accountID = accountID;
                 balanceLabel.setText(balance);
             }
         }
@@ -57,7 +66,7 @@ public class ClientPanelController implements Initializable{
         }
     }
 
-    public void viewAccountHistory(){
+    public void setupTableView(String query){
         Dialog<ButtonType> tableView = new Dialog<>();
         tableView.initOwner(accountLabel.getScene().getWindow());
         tableView.setTitle("Display query");
@@ -76,14 +85,89 @@ public class ClientPanelController implements Initializable{
             return;
         }
 
-        String query = "SELECT * FROM AccountHistory('"+ accountLabel.getText() + "')";
-
         TableViewController controller = fxmlLoader.getController();
         controller.loadData(query);
         tableView.show();
     }
 
-    public void viewOperationsByMonth(){
+    public void viewAccountHistory(){
+        String query = "SELECT Id,Date,Amount,Operation FROM AccountHistory('" + accountID + "')";
+        setupTableView(query);
+    }
 
+    public void viewOperationsByMonth(){
+        String query = "SELECT * FROM AccountOperationsByMonth('" + accountID + "')";
+        setupTableView(query);
+    }
+
+    public void choiceBoxOnAction(){
+        operationButton.setDisable(false);
+    }
+
+    public void operationButtonOnClick() throws SQLException{
+        String value = (String) operationsChoiceBox.getValue();
+        ArrayList<String> data = new ArrayList<>();
+        switch(value){
+            case ("Withdraw") -> {
+                System.out.println("Chose withdraw");
+                data.add("Withdraw");
+                data.add("Card");
+                data.add(accountID);
+                data.add("Amount");
+                data.add("ATM");
+            }
+            case ("Deposit") -> {
+                System.out.println("Chose deposit");
+                data.add("Deposit");
+                data.add("Card");
+                data.add(accountID);
+                data.add("Amount");
+                data.add("ATM");
+            }
+            case ("Transfer") -> {
+                System.out.println("Chose transfer");
+                data.add("Transfer");
+                data.add("Sender");
+                data.add(accountID);
+                data.add("Receiver");
+                data.add("Amount");
+                data.add("Title");
+                data.add("Category");
+            }
+            case ("Phone transfer") -> {
+                System.out.println("Chose PhoneTransfer");
+                data.add("PhoneTransfer");
+                data.add("Sender");
+                data.add(accountID);
+                data.add("Phone of the receiver");
+                data.add("Amount");
+                data.add("Title");
+                data.add("Category");
+            }
+        }
+
+        Dialog<ButtonType> operationDialog = new Dialog<>();
+        operationDialog.initOwner(accountLabel.getScene().getWindow());
+        operationDialog.setTitle("Operation setup");
+        operationDialog.setHeaderText("To perform " + data.get(0) + " insert the data below and press Done");
+        operationDialog.getDialogPane().getScene().getWindow()
+                .setOnCloseRequest(windowEvent -> operationDialog.getDialogPane().getScene().getWindow().hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("operations/operationSetupView.fxml"));
+        try{
+            operationDialog.getDialogPane().setContent(fxmlLoader.load());
+        }
+        catch(IOException e){
+            System.out.println("Could not load operationSetupView");
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        OperationSetupController controller = fxmlLoader.getController();
+        controller.loadData(data);
+        operationDialog.showAndWait();
+
+        loadData(accountID);
     }
 }

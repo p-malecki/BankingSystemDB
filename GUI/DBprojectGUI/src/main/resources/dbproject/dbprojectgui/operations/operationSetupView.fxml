@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbproject.dbprojectgui.operations.OperationSetupController">
+   <center>
+      <VBox fx:id="mainVBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0" BorderPane.alignment="CENTER">
+         <children>
+         </children>
+      </VBox>
+   </center>
+   <bottom>
+      <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <buttons>
+          <Button mnemonicParsing="false" text="Done" onAction="#submit" />
+            <Button mnemonicParsing="false" text="Cancel" onAction="#exit" />
+        </buttons>
+         <padding>
+            <Insets right="25.0" />
+         </padding>
+      </ButtonBar>
+   </bottom>
+</BorderPane>
