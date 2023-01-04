@@ -5,7 +5,9 @@ import dbproject.dbprojectgui.operations.TableViewController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -13,6 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ClientPanelController implements Initializable{
@@ -25,7 +29,11 @@ public class ClientPanelController implements Initializable{
     @FXML
     private ChoiceBox operationsChoiceBox;
     @FXML
+    private ChoiceBox changeChoiceBox;
+    @FXML
     private Button operationButton;
+    @FXML
+    private Button changeButton;
 
     private Statement statement;
     private String accountID;
@@ -43,6 +51,7 @@ public class ClientPanelController implements Initializable{
         }
 
         operationButton.setDisable(true);
+        changeButton.setDisable(true);
     }
 
     public void loadData(String account){
@@ -100,8 +109,18 @@ public class ClientPanelController implements Initializable{
         setupTableView(query);
     }
 
-    public void choiceBoxOnAction(){
+    public void viewCardsAndDetails(){
+        String query = "SELECT CD.* FROM Cards C JOIN CardDetails CD ON CD.Card = C.CardID " + "WHERE C.Account = '" +
+                accountID + "'";
+        setupTableView(query);
+    }
+
+    public void operationsChoiceBoxOnAction(){
         operationButton.setDisable(false);
+    }
+
+    public void changeChoiceBoxOnAction(){
+        changeButton.setDisable(false);
     }
 
     public void operationButtonOnClick() throws SQLException{
@@ -169,5 +188,88 @@ public class ClientPanelController implements Initializable{
         operationDialog.showAndWait();
 
         loadData(accountID);
+    }
+
+    public void changeButtonOnClick() throws SQLException{
+        String value = (String) changeChoiceBox.getValue();
+        Dialog<String> dialog = new Dialog<>();
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(20);
+        final double WIDTH = 250.0;
+
+        switch(value){
+            case ("Card PIN") -> {
+                dialog.setTitle("Change PIN");
+                dialog.setHeaderText("Choose card and enter new PIN");
+
+                List<String> cardsList = new ArrayList<>();
+                ResultSet rs = statement.executeQuery("SELECT CardID FROM Cards WHERE Account = '" + accountID + "'");
+                while(rs.next())
+                    cardsList.add(rs.getString(1));
+
+                ChoiceBox<String> cards = new ChoiceBox<>();
+                cards.getItems().addAll(cardsList);
+                cards.setMaxWidth(WIDTH);
+                TextField PIN = new TextField("New PIN");
+                PIN.setMaxWidth(WIDTH);
+
+                vBox.getChildren().addAll(cards, PIN);
+                dialog.getDialogPane().setContent(vBox);
+                dialog.setResultConverter(button -> {
+                    if(button.equals(ButtonType.OK))
+                        return "UPDATE Cards SET PIN = " + PIN.getText() + "WHERE CardID = '" + cards.getValue() + "'";
+
+                    return null;
+                });
+            }
+            case ("Password") -> {
+                dialog.setTitle("Change password");
+                dialog.setHeaderText("Enter old and new password");
+
+                TextField oldPassword = new TextField("Old password");
+                oldPassword.setMaxWidth(WIDTH);
+                TextField newPassword = new TextField("New password");
+                newPassword.setMaxWidth(WIDTH);
+
+                vBox.getChildren().addAll(oldPassword, newPassword);
+                dialog.getDialogPane().setContent(vBox);
+                dialog.setResultConverter(button -> {
+                    if(button.equals(ButtonType.OK)){
+                        try{
+                            ResultSet rs = statement.executeQuery("SELECT dbo.GetPassword('" + accountID + "')");
+                            if(rs.next() && rs.getString(1).equals(oldPassword.getText()))
+                                return "UPDATE Accounts SET Password = '" + newPassword.getText() + "' WHERE " +
+                                        "AccountID = '" + accountID + "'";
+                            else{
+                                Alert alert = new Alert(Alert.AlertType.WARNING);
+                                alert.setHeaderText("Wrong password");
+                                alert.showAndWait();
+                                return null;
+                            }
+                        }
+                        catch(SQLException e){
+                            return null;
+                        }
+                    }
+                    return null;
+                });
+            }
+        }
+
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()){
+            try{
+                statement.execute(result.get());
+            }
+            catch(SQLException e){
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText(e.getMessage());
+                alert.showAndWait();
+            }
+        }
     }
 }

@@ -38,7 +38,7 @@ public class LoginController implements Initializable{
         String login = accountField.getText();
 //        String login = "NO1086289381692";
         String password = passwordField.getText();
-//        String password = "SnxkIh0C0Uql0wsRGdLJ";
+//        String password = "123";
 
         String query = "SELECT dbo.IfAccountExists('" + login + "'), dbo.GetPassword('" + login + "')";
         ResultSet rs = statement.executeQuery(query);

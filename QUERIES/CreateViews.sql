@@ -223,3 +223,22 @@ RETURN(
 )
 END
 GO
+
+IF OBJECT_ID('CardDetails', 'V') IS NOT NULL
+DROP FUNCTION CardDetails
+GO
+CREATE VIEW CardDetails AS(
+SELECT DISTINCT Card,
+    COUNT(Amount) OVER(PARTITION BY Card) 'Operations',
+    SUM(Amount) OVER(PARTITION BY Card) 'Value'
+    FROM(
+        SELECT Card, Amount, [Date]
+        FROM Withdraws
+        UNION ALL
+        SELECT Card, Amount, [Date]
+        FROM Withdraws
+        UNION ALL
+        SELECT UsedCard, Amount, [Date]
+        FROM Transactions
+    ) CardOperations
+)
