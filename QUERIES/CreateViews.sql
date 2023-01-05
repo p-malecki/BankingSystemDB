@@ -19,6 +19,17 @@ CREATE VIEW SavingAccountsToUpdate AS(
 )
 GO
 
+IF OBJECT_ID('StandingOrdersToSend', 'V') IS NOT NULL
+DROP VIEW StandingOrdersToSend 
+GO
+CREATE VIEW StandingOrdersToSend AS(
+    SELECT *
+    FROM StandingOrders
+    WHERE StartDate <= CAST(GETDATE() AS Date) AND CAST(GETDATE() AS Date) <= EndDate
+	AND DAY(StartDate) = DAY(GETDATE())
+)
+GO
+
 IF OBJECT_ID('AllOperations', 'V') IS NOT NULL
 DROP VIEW AllOperations 
 GO
@@ -407,6 +418,35 @@ RETURN(
 	UNION ALL
 	SELECT 'Transactions: ' AS 'Type', Operations
 	FROM ClientPhoneTransfersNumber(@clientID)
+)
+GO
+
+IF OBJECT_ID('OnOwnAccountsTransfers', 'IF') IS NOT NULL
+DROP FUNCTION OnOwnAccountsTransfers
+GO
+CREATE FUNCTION OnOwnAccountsTransfers(@clientID INT)
+RETURNS TABLE
+AS
+RETURN(
+    SELECT *
+	FROM Transfers
+	WHERE Sender IN (SELECT AccountID FROM Accounts WHERE ClientID = @clientID)
+	AND Receiver IN (SELECT AccountID FROM Accounts WHERE ClientID = @clientID)
+)
+GO
+-- test for client 4
+
+IF OBJECT_ID('DepartmentATMsBalance', 'IF') IS NOT NULL
+DROP FUNCTION De
+GO
+CREATE FUNCTION DepartmentATMsBalance(@departamentID INT)
+RETURNS TABLE
+AS
+RETURN(
+    SELECT SUM(CurrentBalance) as balancesSUM
+	FROM ATMs
+	WHERE SupervisorDepartment = @departamentID
+	GROUP BY SupervisorDepartment
 )
 GO
 

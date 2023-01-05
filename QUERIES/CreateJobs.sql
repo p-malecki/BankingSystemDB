@@ -16,7 +16,7 @@ GO
 CREATE PROCEDURE checkSavingAccounts
 AS
 BEGIN
-    DECLARE @month INT = MONTH(GETDATE())
+	--DECLARE @month INT = MONTH(GETDATE())
     DECLARE @rowCount INT = (SELECT COUNT(*) FROM SavingAccountsToUpdate)
     DECLARE @temp TABLE(ID INT IDENTITY, Account NVARCHAR(100), Frequency FLOAT, CurrentBalance MONEY)
     DECLARE @id INT = 1
@@ -41,6 +41,40 @@ BEGIN
         
        INSERT INTO Transfers VALUES
        ('BANK',@account,@amount,'Saving Account Income',GETDATE(),1,NULL)
+       SET @rowCount = @rowCount - 1
+    END 
+END
+GO
+
+DROP PROCEDURE IF EXISTS checkStandingOrders
+GO
+CREATE PROCEDURE checkStandingOrders
+AS
+BEGIN
+    DECLARE @rowCount INT = (SELECT COUNT(*) FROM StandingOrdersToSend)
+    DECLARE @temp TABLE(ID INT IDENTITY, Sender NVARCHAR(100), Receiver NVARCHAR(100), Amount MONEY, Title NVARCHAR(100))
+    DECLARE @id INT = 1
+
+    INSERT INTO @temp (Sender, Receiver, Amount, Title)
+    SELECT SOS.Sender, SOS.Receiver, SOS.Amount, SOS.Title FROM StandingOrdersToSend SOS
+
+    DECLARE @tmp_sender NVARCHAR(100)
+    DECLARE @tmp_receiver NVARCHAR(100)
+    DECLARE @tmp_amount MONEY
+	DECLARE @tmp_title NVARCHAR(100)
+
+    WHILE @rowCount > 0 
+    BEGIN
+        SELECT @id = ID,
+            @tmp_sender = Sender,
+            @tmp_receiver = Receiver,
+            @tmp_amount = Amount,
+			@tmp_title = Title
+        FROM @temp
+        ORDER BY ID DESC OFFSET @rowCount - 1 ROWS FETCH NEXT 1 ROWS ONLY;
+
+       EXEC addNewTransfer @sender = @tmp_sender, @receiver = @tmp_receiver, @amount = @tmp_amount, @title = @tmp_title, @category=11
+
        SET @rowCount = @rowCount - 1
     END 
 END
@@ -101,3 +135,18 @@ EXEC sp_add_jobstep
     @retry_attempts = 5,  
     @retry_interval = 5;  
 GO  
+
+IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkStandingOrders')
+    EXEC sp_delete_job @job_name = 'checkStandingOrders'
+GO
+EXEC sp_add_job
+    @job_name = 'checkStandingOrders'
+GO
+EXEC sp_add_jobstep  
+    @job_name = N'checkStandingOrders',  
+    @step_name = N'CheckStandingOrders',  
+    @subsystem = N'TSQL',  
+    @command = N'EXEC checkStandingOrders',   
+    @retry_attempts = 5,  
+    @retry_interval = 5;  
+GO
