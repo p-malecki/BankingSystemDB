@@ -69,7 +69,7 @@ AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Account does not exist',17,1);
-	ELSE IF (SELECT Active FROM Accounts WHERE AccountID = @accountID) = 0
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
 		RAISERROR('Account is disactived',17,1);
 	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Password is not correct',17,1);
@@ -80,10 +80,10 @@ BEGIN
 		IF ( SELECT MainAccount FROM Preferences WHERE ClientID = @clientID) = @accountID
 		BEGIN
 			
-			IF (SELECT COUNT(*) FROM Accounts WHERE ClientID = @clientID and AccountID <> @accountID and Active = 1) > 0
+			IF (SELECT COUNT(*) FROM Accounts WHERE ClientID = @clientID and AccountID <> @accountID and EndDate IS NULL) > 0
 				UPDATE Preferences
 				SET MainAccount = ( SELECT TOP 1 AccountID FROM Accounts 
-									WHERE ClientID = @clientID and AccountID <> @accountID and Active = 1)
+									WHERE ClientID = @clientID and AccountID <> @accountID and EndDate IS NULL)
 				WHERE ClientID = @clientID
 			ELSE
 				UPDATE Preferences
@@ -92,7 +92,7 @@ BEGIN
 		END
 
 		UPDATE Accounts
-		SET Active = 0, EndDate = CAST(GETDATE() AS Date)
+		SET EndDate = CAST(GETDATE() AS Date)
 		WHERE AccountID = @accountID
 	END
 END
@@ -109,7 +109,7 @@ AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Account does not exist',17,1);
-	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @accountID ) = 0
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @limit < 0
 		RAISERROR('Incorrect limit',17,1);
@@ -130,7 +130,7 @@ AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Account does not exist',17,1);
-	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @accountID ) = 0
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Password is not correct',17,1);
@@ -155,7 +155,7 @@ AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
 		RAISERROR('Account does not exist',17,1);
-	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @sender ) = 0
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @amount <= 0
 		RAISERROR('Incorrect amount',17,1)
@@ -183,7 +183,7 @@ AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
 		RAISERROR('Account does not exist',17,1);
-	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @sender ) = 0
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @amount <= 0
 		RAISERROR('Incorrect amount',17,1)
@@ -376,7 +376,7 @@ AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Account does not exist',17,1);
-	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @accountID ) = 0
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @amount <= 0
 		RAISERROR('Incorrect amount', 17 ,1)
@@ -422,7 +422,7 @@ AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
 		RAISERROR('Account does not exist',17,1);
-	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @sender ) = 0
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @sender = @receiver OR @endDate = @startDate
 		RAISERROR('Incorrect operation',17,1)
