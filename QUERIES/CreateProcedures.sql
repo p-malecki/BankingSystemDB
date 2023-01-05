@@ -41,7 +41,7 @@ BEGIN
 	ELSE
 	BEGIN
 		INSERT INTO Accounts VALUES
-		(@accountID, @clientID, @name, @accountType, 0, CAST(GETDATE() AS Date), NULL, @password)
+		(@accountID, @clientID, @name, @accountType, 0, CAST(GETDATE() AS Date), NULL, @password, 1)
 
 		IF (SELECT MainAccount FROM Preferences WHERE ClientID = @clientID) IS NULL
 		BEGIN
@@ -59,22 +59,87 @@ BEGIN
 END
 GO
 
+
+DROP PROCEDURE IF EXISTS disactiveAccount
+GO
+CREATE PROCEDURE disactiveAccount
+@accountID NVARCHAR(100),
+@password NVARCHAR(100)
+AS
+BEGIN
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF (SELECT Active FROM Accounts WHERE AccountID = @accountID) = 0
+		RAISERROR('Account is disactived',17,1);
+	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Password is not correct',17,1);
+	ELSE
+	BEGIN
+		DECLARE @clientID INT
+		SET @clientID = (SELECT A.ClientID FROM Accounts A WHERE A.AccountID = @accountID)
+		IF ( SELECT MainAccount FROM Preferences WHERE ClientID = @clientID) = @accountID
+		BEGIN
+			
+			IF (SELECT COUNT(*) FROM Accounts WHERE ClientID = @clientID and AccountID <> @accountID and Active = 1) > 0
+				UPDATE Preferences
+				SET MainAccount = ( SELECT TOP 1 AccountID FROM Accounts 
+									WHERE ClientID = @clientID and AccountID <> @accountID and Active = 1)
+				WHERE ClientID = @clientID
+			ELSE
+				UPDATE Preferences
+				SET MainAccount = NULL, AllowPhoneTransfer = 0
+				WHERE ClientID = @clientID
+		END
+
+		UPDATE Accounts
+		SET Active = 0, EndDate = CAST(GETDATE() AS Date)
+		WHERE AccountID = @accountID
+	END
+END
+GO
+
 DROP PROCEDURE IF EXISTS addNewCard
 GO
 CREATE PROCEDURE addNewCard
 @cardID NVARCHAR(100),
-@account NVARCHAR(100),
+@accountID NVARCHAR(100),
 @limit INT,
 @pin INT
 AS
 BEGIN
-	IF (SELECT EndDate FROM Accounts WHERE AccountID = @account) IS NOT NULL
-			RAISERROR('Account has been closed', 17 ,1)
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @accountID ) = 0
+		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @limit < 0
 		RAISERROR('Incorrect limit',17,1);
 	ELSE
 		INSERT INTO Cards VALUES
-		(@cardID, @account, @limit, @pin);
+		(@cardID, @accountID, @limit, @pin);
+END
+GO
+
+DROP PROCEDURE IF EXISTS changeCardLimit
+GO
+CREATE PROCEDURE changeCardLimit
+@cardID NVARCHAR(100),
+@limit INT,
+@accountID NVARCHAR(100),
+@password NVARCHAR(100)
+AS
+BEGIN
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @accountID ) = 0
+		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Password is not correct',17,1);
+	ELSE IF @limit <= 0
+		RAISERROR('Incorrect limit',17,1)
+	ELSE
+		UPDATE Cards
+		SET Limit = @limit
+		WHERE CardID = @cardID
 END
 GO
 
@@ -88,10 +153,12 @@ CREATE PROCEDURE addNewTransfer
 @category INT
 AS
 BEGIN
-	IF @amount <= 0
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @sender ) = 0
+		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @amount <= 0
 		RAISERROR('Incorrect amount',17,1)
-	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
-			RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF ( SELECT CurrentBalance
 			FROM Accounts
 			WHERE AccountID = @sender ) < @amount
@@ -114,10 +181,12 @@ CREATE PROCEDURE addNewPhoneTransfer
 @category INT
 AS
 BEGIN
-	IF @amount <= 0
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @sender ) = 0
+		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @amount <= 0
 		RAISERROR('Incorrect amount',17,1)
-	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
-			RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF ( SELECT CurrentBalance
 			FROM Accounts
 			WHERE AccountID = @sender ) < @amount
@@ -141,14 +210,14 @@ GO
 DROP PROCEDURE IF EXISTS addNewWithdraw
 GO
 CREATE PROCEDURE addNewWithdraw
-@card NVARCHAR(100),
+@cardID NVARCHAR(100),
 @amount MONEY,
 @ATM INT
 AS
 BEGIN
 	IF @amount <= 0
 		RAISERROR('Incorrect amount',17,1)
-	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @card) IS NOT NULL
+	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @cardID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF NOT EXISTS(SELECT * FROM ATMs WHERE ATMID = @ATM)
 		RAISERROR('ATM does not exist',17,1)
@@ -158,38 +227,38 @@ BEGIN
 		SELECT CurrentBalance
 		FROM Accounts A
 		JOIN Cards C ON C.Account = A.AccountID
-		WHERE C.CardID = @card)
+		WHERE C.CardID = @cardID)
 		RAISERROR('Not enough funds',17,1)
 	ELSE
 		INSERT INTO Withdraws VALUES
-		(@card, @amount, @ATM, GETDATE())
+		(@cardID, @amount, @ATM, GETDATE())
 END
 GO
 
 DROP PROCEDURE IF EXISTS addNewDeposit
 GO
 CREATE PROCEDURE addNewDeposit
-@card NVARCHAR(100),
+@cardID NVARCHAR(100),
 @amount MONEY,
 @ATM INT
 AS
 BEGIN
 	IF @amount <= 0
 		RAISERROR('Incorrect amount',17,1)
-	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @card) IS NOT NULL
+	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @cardID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF NOT EXISTS(SELECT * FROM ATMs WHERE ATMID = @ATM)
 		RAISERROR('ATM does not exist',17,1)	
 	ELSE
 		INSERT INTO Deposits VALUES
-		(@card, @amount, @ATM, GETDATE())
+		(@cardID, @amount, @ATM, GETDATE())
 END
 GO
 
 DROP PROCEDURE IF EXISTS addNewTransaction
 GO
 CREATE PROCEDURE addNewTransaction
-@card NVARCHAR(100),
+@cardID NVARCHAR(100),
 @receiver NVARCHAR(100),
 @amount MONEY,
 @title NVARCHAR(100),
@@ -198,19 +267,21 @@ AS
 BEGIN
 	IF @amount <= 0
 		RAISERROR('Incorrect amount', 17 ,1)
-	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @card) IS NOT NULL
+	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @cardID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @amount > (
 		SELECT CurrentBalance
 		FROM Accounts A
 		JOIN Cards C ON C.Account = A.AccountID
-		WHERE C.CardID = @card)
+		WHERE C.CardID = @cardID)
 		RAISERROR('Not enough funds', 17, 1)
-	ELSE IF @receiver = (SELECT Account FROM Cards WHERE CardID = @card)
+	ELSE IF @amount > (SELECT Limit FROM Cards WHERE CardID = @cardID)
+		RAISERROR('Amount greater then card limit',17,1)
+	ELSE IF @receiver = (SELECT Account FROM Cards WHERE CardID = @cardID)
 		RAISERROR('Incorrect operation', 17, 1)
 	ELSE
 		INSERT INTO Transactions VALUES
-		(@card, @receiver, @amount, GETDATE(), @category)
+		(@cardID, @receiver, @amount, GETDATE(), @category)
 END
 GO
 
@@ -303,10 +374,12 @@ CREATE PROCEDURE addNewLoan
 @servingEmployee INT
 AS
 BEGIN
-	IF @amount <= 0
-		RAISERROR('Incorrect amount', 17 ,1)
-	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @accountID ) = 0
 		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @amount <= 0
+		RAISERROR('Incorrect amount', 17 ,1)
 	ELSE IF NOT EXISTS(SELECT * FROM Employees WHERE EmployeeID = @servingEmployee)
 		RAISERROR('Employee does not exist',17,1)
 	ELSE IF @endDate < GETDATE()
@@ -347,14 +420,16 @@ CREATE PROCEDURE addStandingOrders
 @endDate DATE
 AS
 BEGIN
-	IF @sender = @receiver OR @endDate = @startDate
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF ( SELECT Active FROM Accounts WHERE AccountID = @sender ) = 0
+		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @sender = @receiver OR @endDate = @startDate
 		RAISERROR('Incorrect operation',17,1)
 	ELSE IF @amount <= 0
 		RAISERROR('Incorrect amount',17,1)
 	ELSE IF @frequency <= 0 OR @frequency > (DATEDIFF(day, @startDate, @endDate))
 		RAISERROR('Incorrect frequency',17,1) 
-	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
-			RAISERROR('Account has been closed', 17 ,1)
 	ELSE IF @startDate < GETDATE()
 		RAISERROR('Start date can not be in the past', 17, 1)
 	ELSE IF @endDate < GETDATE()

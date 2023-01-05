@@ -225,7 +225,7 @@ END
 GO
 
 IF OBJECT_ID('CardDetails', 'V') IS NOT NULL
-DROP FUNCTION CardDetails
+DROP VIEW CardDetails
 GO
 CREATE VIEW CardDetails AS(
 SELECT DISTINCT Card,

@@ -20,7 +20,8 @@ CREATE TABLE [Accounts] (
   [CurrentBalance] INT,
   [StartDate] DATE,
   [EndDate] DATE,
-  [Password] NVARCHAR(100)
+  [Password] NVARCHAR(100),
+  [Active] BIT DEFAULT 1
 )
 
 CREATE TABLE [Cards] (
