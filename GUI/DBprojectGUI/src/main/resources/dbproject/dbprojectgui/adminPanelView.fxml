@@ -23,10 +23,25 @@
             <children>
                 <Button prefHeight="25.0" prefWidth="200.0" text="Display all operations" fx:id="allOperationsButton"
                         onAction="#allOperationsOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display all operations"
+                        fx:id="numberOfOperationsByAccountButton"
+                        onAction="#numberOfOperationsByAccountOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display all operations"
+                        fx:id="numberOfOperationsByClientButton"
+                        onAction="#numberOfOperationsByClientOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display all operations"
+                        fx:id="numberOfOperationsByAccountsAndCatergoriesButton"
+                        onAction="#numberOfOperationsByAccountsAndCategoriesOnClick"/>
                 <Button prefHeight="25.0" prefWidth="200.0" text="Display chosen client" fx:id="chosenClientButton"
                         onAction="#chosenClientOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display chosen client" fx:id="numberOfTransfersByClientButton"
+                        onAction="#numberOfTransfersByClientOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display chosen client" fx:id="numberOfOperationsByAccountsAndCategoriesButton"
+                        onAction="#numberOfPhoneTransfersByClientOnClick"/>
                 <Button prefHeight="25.0" prefWidth="200.0" text="Display ATM by month" fx:id="atmByMonthButton"
                         onAction="#atmByMonthOnClick"/>
+                <Button prefHeight="25.0" prefWidth="200.0" text="Display ATM history"
+                        fx:id="atmMalfunctionsHistoryButton" onAction="#atmMalfunctionsHistoryOnClick"/>
                 <Button prefHeight="25.0" prefWidth="200.0" text="Report ATM malfunction"
                         fx:id="reportAtmMalfunctionButton" onAction="#reportAtmMalfunctionOnClick"/>
                 <Button prefHeight="25.0" prefWidth="200.0" text="Add new client" fx:id="addNewClientButton"

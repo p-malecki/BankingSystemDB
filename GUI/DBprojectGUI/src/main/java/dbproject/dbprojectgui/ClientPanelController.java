@@ -37,6 +37,7 @@ public class ClientPanelController implements Initializable{
 
     private Statement statement;
     private String accountID;
+    private String clientID;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
@@ -60,12 +61,13 @@ public class ClientPanelController implements Initializable{
         try{
             ResultSet rs = statement.executeQuery(query);
             if(rs.next()){
-                String name = rs.getString(1);
+                String clientID = rs.getString(1);
                 String accountID = rs.getString(2);
                 String balance = rs.getString(3) + "$";
 
-                nameLabel.setText(name);
+                nameLabel.setText(clientID);
                 accountLabel.setText(accountID);
+                this.clientID = clientID;
                 this.accountID = accountID;
                 balanceLabel.setText(balance);
             }
@@ -115,6 +117,16 @@ public class ClientPanelController implements Initializable{
         setupTableView(query);
     }
 
+    public void viewOperationsByOperationType(){
+        String query = "SELECT * FROM ClientOperationsByOperationType(" + clientID + ")";
+        setupTableView(query);
+    }
+
+    public void viewClientOperationsByCategories(){
+        String query = "SELECT * FROM ClientOperationsByCategories(" + clientID + ")";
+        setupTableView(query);
+    }
+
     public void operationsChoiceBoxOnAction(){
         operationButton.setDisable(false);
     }
@@ -159,6 +171,17 @@ public class ClientPanelController implements Initializable{
                 data.add("Sender");
                 data.add(accountID);
                 data.add("Phone of the receiver");
+                data.add("Amount");
+                data.add("Title");
+                data.add("Category");
+            }
+            case ("Transfer to own account") -> {
+                System.out.println("Chose transfer to own account");
+                data.add("Transfer");
+                data.add("Sender");
+                data.add(accountID);
+                data.add("Sender other account");
+                data.add(clientID);
                 data.add("Amount");
                 data.add("Title");
                 data.add("Category");
@@ -223,6 +246,41 @@ public class ClientPanelController implements Initializable{
                     if(button.equals(ButtonType.OK))
                         return "UPDATE Cards SET PIN = " + PIN.getText() + "WHERE CardID = '" + cards.getValue() + "'";
 
+                    return null;
+                });
+            }
+            case ("Card Limit") -> {
+                dialog.setTitle("Change Limit");
+                dialog.setHeaderText("Choose card and enter new limit");
+
+                List<String> cardsList = new ArrayList<>();
+                ResultSet rs = statement.executeQuery("SELECT CardID FROM Cards WHERE Account = '" + accountID + "'");
+                while(rs.next())
+                    cardsList.add(rs.getString(1));
+
+                ChoiceBox<String> cards = new ChoiceBox<>();
+                cards.getItems().addAll(cardsList);
+                cards.setMaxWidth(WIDTH);
+                TextField PIN = new TextField("Current PIN");
+                PIN.setMaxWidth(WIDTH);
+                TextField limit = new TextField("New limit");
+                limit.setMaxWidth(WIDTH);
+
+                vBox.getChildren().addAll(cards, PIN, limit);
+                dialog.getDialogPane().setContent(vBox);
+                dialog.setResultConverter(button -> {
+                    if(button.equals(ButtonType.OK)) {
+                        ResultSet rs2 = null;
+                        try {
+                            rs2 = statement.executeQuery("SELECT dbo.GetPIN('" + cards.getValue() + "')");
+                            if(rs2.next()){
+                                if(rs2.getString(1).equals(PIN.getText()))
+                                    return "UPDATE Cards SET Limit = " + limit.getText() + "WHERE CardID = '" + cards.getValue() + "'";
+                            }
+                        } catch (SQLException e) {
+                            return null;
+                        }
+                    }
                     return null;
                 });
             }

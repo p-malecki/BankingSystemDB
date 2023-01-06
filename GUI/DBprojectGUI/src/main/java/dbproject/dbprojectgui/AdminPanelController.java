@@ -20,9 +20,21 @@ public class AdminPanelController implements Initializable{
     @FXML
     public Button allOperationsButton;
     @FXML
+    public Button numberOfOperationsByAccountButton;
+    @FXML
+    public Button numberOfOperationsByClientButton;
+    @FXML
+    public Button numberOfOperationsByAccountsAndCatergoriesButton;
+    @FXML
     public Button chosenClientButton;
     @FXML
+    public Button numberOfTransfersByClientButton;
+    @FXML
+    public Button numberOfOperationsByAccountsAndCategoriesButton;
+    @FXML
     public Button atmByMonthButton;
+    @FXML
+    public Button atmMalfunctionsHistoryButton;
     @FXML
     public Button reportAtmMalfunctionButton;
     @FXML
@@ -77,6 +89,21 @@ public class AdminPanelController implements Initializable{
         setupTableView(query);
     }
 
+    public void numberOfOperationsByAccountOnClick(){
+        String query = "SELECT * FROM NumberOfOperationsByAccount";
+        setupTableView(query);
+    }
+
+    public void numberOfOperationsByClientOnClick(){
+        String query = "SELECT * FROM NumberOfOperationsByClient";
+        setupTableView(query);
+    }
+
+    public void numberOfOperationsByAccountsAndCategoriesOnClick(){
+        String query = "SELECT * FROM NumberOfOperationsByAccountsAndCatergories";
+        setupTableView(query);
+    }
+
     public void chosenClientOnClick(){
         TextInputDialog dialog = new TextInputDialog("Enter account ID");
         dialog.setTitle("Operation");
@@ -87,6 +114,16 @@ public class AdminPanelController implements Initializable{
             String query = "SELECT * FROM AccountHistory('" + result.get() + "')";
             setupTableView(query);
         }
+    }
+
+    public void numberOfTransfersByClientOnClick(){
+        String query = "SELECT * FROM NumberOfTransfersByClient";
+        setupTableView(query);
+    }
+
+    public void numberOfPhoneTransfersByClientOnClick(){
+        String query = "SELECT * FROM NumberOfPhoneTransfersByClient";
+        setupTableView(query);
     }
 
     public void atmByMonthOnClick() throws SQLException{
@@ -105,7 +142,24 @@ public class AdminPanelController implements Initializable{
             String query = "SELECT * FROM ATMOperationsByMonth(" + id + ")";
             setupTableView(query);
         }
+    }
 
+    public void atmMalfunctionsHistoryOnClick() throws SQLException{
+        List<String> ATMs = new ArrayList<>();
+        ResultSet rs = statement.executeQuery("SELECT ATMID, City FROM ATMs");
+        while(rs.next())
+            ATMs.add(rs.getString(1) + ". " + rs.getString(2));
+
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(ATMs.get(0), ATMs);
+        dialog.setTitle("Operation");
+        dialog.setHeaderText("Enter ID of the ATM you want to preview");
+
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()){
+            String id = result.get().substring(0, result.get().indexOf("."));
+            String query = "SELECT * FROM ATM_MalfunctionsHistory(" + id + ")";
+            setupTableView(query);
+        }
     }
 
     public void reportAtmMalfunctionOnClick() throws SQLException{

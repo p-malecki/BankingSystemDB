@@ -39,6 +39,8 @@
             <Button onAction="#viewAccountHistory" prefHeight="25.0" prefWidth="200.0" text="Display account history" />
             <Button onAction="#viewOperationsByMonth" prefHeight="25.0" prefWidth="200.0" text="Display operations by month" />
             <Button onAction="#viewCardsAndDetails" prefHeight="25.0" prefWidth="200.0" text="Cards and details" />
+            <Button onAction="#viewOperationsByOperationType" prefHeight="25.0" prefWidth="200.0" text="Display operations by type" />
+            <Button onAction="#viewClientOperationsByCategories" prefHeight="25.0" prefWidth="200.0" text="Display operations by categories" />
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
                 <ChoiceBox fx:id="operationsChoiceBox" onAction="#operationsChoiceBoxOnAction" prefHeight="25.0" prefWidth="200.0" value="Choose operation...">
                     <items>
@@ -47,6 +49,7 @@
                             <String fx:value="Deposit" />
                             <String fx:value="Transfer" />
                             <String fx:value="Phone transfer" />
+                            <String fx:value="Transfer to own account" />
                         </FXCollections>
                     </items>
                 </ChoiceBox>
@@ -57,6 +60,7 @@
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="Card PIN" />
+                            <String fx:value="Card Limit" />
                             <String fx:value="Password" />
                         </FXCollections>
                     </items>

@@ -66,6 +66,18 @@ public class OperationSetupController implements Initializable{
                     textField.setMaxWidth(300.0);
                     mainVBox.getChildren().add(textField);
                 }
+                case ("Sender other account") -> {
+                    ObservableList<String> accounts = FXCollections.observableArrayList();
+                    String query = "SELECT AccountID FROM Accounts WHERE ClientID = " + iterator.next();
+                    ResultSet rs = statement.executeQuery(query);
+                    while(rs.next())
+                        accounts.add(rs.getString(1));
+
+                    ChoiceBox<String> choiceBox = new ChoiceBox<>(accounts);
+                    choiceBox.setPrefWidth(300.0);
+                    mainVBox.getChildren().add(choiceBox);
+                    choiceBox.setValue("The other Account");
+                }
                 case ("Category") -> {
                     ObservableList<String> categories = FXCollections.observableArrayList();
                     String query = "SELECT * FROM TransactionCategories";

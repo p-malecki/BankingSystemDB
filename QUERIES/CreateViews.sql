@@ -152,7 +152,7 @@ CREATE VIEW NumberOfOperationsByCard AS(
     SELECT Card,
         COUNT(*) 'Operations'
     FROM(
-        SELECT Card, Amount, [Date]
+        SELECT Card, Amount, [D	ate]
         FROM Withdraws
         UNION ALL
         SELECT Card, Amount, [Date]
@@ -195,6 +195,23 @@ RETURN(
     SELECT [Password]
     FROM Accounts
     WHERE AccountID = @account
+)
+END
+GO
+
+IF OBJECT_ID('GetPIN', 'FN') IS NOT NULL
+DROP FUNCTION GetPIN
+GO
+CREATE FUNCTION GetPIN(
+    @cardID NVARCHAR(100)
+)
+RETURNS NVARCHAR(100)
+AS
+BEGIN
+RETURN(
+    SELECT PIN
+    FROM Cards
+    WHERE CardID = @cardID
 )
 END
 GO
@@ -289,10 +306,10 @@ CREATE VIEW NumberOfOperationsByClient AS
 	GROUP BY A.ClientID
 GO
 
-IF OBJECT_ID('NumberOfOperationsByAccountsAndCatergories', 'V') IS NOT NULL
-DROP VIEW NumberOfOperationsByAccountsAndCatergories 
+IF OBJECT_ID('NumberOfOperationsByAccountsAndCategories', 'V') IS NOT NULL
+DROP VIEW NumberOfOperationsByAccountsAndCategories 
 GO
-CREATE VIEW NumberOfOperationsByAccountsAndCatergories AS
+CREATE VIEW NumberOfOperationsByAccountsAndCategories AS
     SELECT Account, Category, COUNT(*) 'Operations'
     FROM(
         SELECT Category, Amount, [Date], Sender AS [Account]
@@ -319,32 +336,31 @@ CREATE VIEW NumberOfOperationsByAccountsAndCatergories AS
 	GROUP BY Category, Account
 GO
 
-IF OBJECT_ID('ClientOperationsByCategories', 'IF') IS NOT NULL
-DROP FUNCTION ClientOperationsByCategories
+IF OBJECT_ID('NumberOfOperationsByCategories', 'IF') IS NOT NULL
+DROP FUNCTION NumberOfOperationsByCategories
 GO
-CREATE FUNCTION ClientOperationsByCategories()
+CREATE FUNCTION NumberOfOperationsByCategories()
 RETURNS TABLE
 AS
 RETURN(
     SELECT A.ClientID, N.Category, SUM(N.Operations) AS 'Operations'
-    FROM NumberOfOperationsByAccountsAndCatergories N
+    FROM NumberOfOperationsByAccountsAndCategories N
 	JOIN Accounts A ON A.AccountID = N.Account
 	GROUP BY A.ClientID, N.Category
 )
 GO
 
-IF OBJECT_ID('NumberOfTransfersByClient', 'V') IS NOT NULL
-DROP VIEW NumberOfTransfersByClient 
+IF OBJECT_ID(ClientOperationsByCategories) IS NOT NULL
+DROP FUNCTION ClientOperationsByCategories 
 GO
-CREATE VIEW NumberOfTransfersByClient AS
-    SELECT A.ClientID, COUNT(T.[Account]) AS 'Operations'
-    FROM (SELECT Sender AS [Account]
-          FROM Transfers
-          UNION ALL
-		  SELECT Receiver AS [Account]
-          FROM Transfers) T
-	JOIN Accounts A ON A.AccountID = T.Account
-	GROUP BY A.ClientID
+CREATE FUNCTION ClientOperationsByCategories(@clientID INT)
+RETURNS TABLE
+AS
+RETURN(
+    SELECT N.Category, N.Operations
+    FROM NumberOfOperationsByCategories N
+	WHERE ClientID = @clientID
+)
 GO
 
 IF OBJECT_ID('NumberOfTransfersByClient', 'V') IS NOT NULL
@@ -403,10 +419,10 @@ RETURN(
 )
 GO
 
-IF OBJECT_ID('ClientRankingByOperationType', 'IF') IS NOT NULL
-DROP FUNCTION ClientRankingByOperationType
+IF OBJECT_ID('ClientOperationsByOperationType', 'IF') IS NOT NULL
+DROP FUNCTION ClientOperationsByOperationType
 GO
-CREATE FUNCTION ClientRankingByOperationType(@clientID INT)
+CREATE FUNCTION ClientOperationsByOperationType(@clientID INT)
 RETURNS TABLE
 AS
 RETURN(
