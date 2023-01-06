@@ -378,6 +378,8 @@ BEGIN
 		RAISERROR('Account does not exist',17,1);
 	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF (SELECT AccountType FROM Accounts WHERE AccountID = @accountID) = 2
+		RAISERROR('Incorrect account type', 17 ,1)
 	ELSE IF @amount <= 0
 		RAISERROR('Incorrect amount', 17 ,1)
 	ELSE IF NOT EXISTS(SELECT * FROM Employees WHERE EmployeeID = @servingEmployee)
