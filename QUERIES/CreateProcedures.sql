@@ -41,7 +41,7 @@ BEGIN
 	ELSE
 	BEGIN
 		INSERT INTO Accounts VALUES
-		(@accountID, @clientID, @name, @accountType, 0, CAST(GETDATE() AS Date), NULL, @password, 1)
+		(@accountID, @clientID, @name, @accountType, 0, CAST(GETDATE() AS Date), NULL, @password)
 
 		IF (SELECT MainAccount FROM Preferences WHERE ClientID = @clientID) IS NULL
 		BEGIN

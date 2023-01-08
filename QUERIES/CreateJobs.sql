@@ -110,7 +110,6 @@ GO
 EXEC sp_add_job
     @job_name = 'checkLoans'
 GO
-
 EXEC sp_add_jobstep  
     @job_name = N'checkLoans',  
     @step_name = N'CheckLoans',  
@@ -119,14 +118,17 @@ EXEC sp_add_jobstep
     @retry_attempts = 5,  
     @retry_interval = 5;  
 GO  
+EXEC sp_attach_schedule
+    @job_name = N'checkLoans',
+    @schedule_name = N'Daily'
+GO
 
 IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkSavingAcoounts')
     EXEC sp_delete_job @job_name = 'checkSavingAcoounts'
 GO
 EXEC sp_add_job
-    @job_name = 'checkSavingAcoounts'
+    @job_name = N'checkSavingAcoounts'
 GO
-
 EXEC sp_add_jobstep  
     @job_name = N'checkSavingAcoounts',  
     @step_name = N'CheckSavingAcoounts',  
@@ -135,12 +137,16 @@ EXEC sp_add_jobstep
     @retry_attempts = 5,  
     @retry_interval = 5;  
 GO  
+EXEC sp_attach_schedule
+    @job_name = N'checkSavingAcoounts',
+    @schedule_name = N'Monthly'
+GO  
 
 IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkStandingOrders')
     EXEC sp_delete_job @job_name = 'checkStandingOrders'
 GO
 EXEC sp_add_job
-    @job_name = 'checkStandingOrders'
+    @job_name = N'checkStandingOrders'
 GO
 EXEC sp_add_jobstep  
     @job_name = N'checkStandingOrders',  
@@ -149,4 +155,9 @@ EXEC sp_add_jobstep
     @command = N'EXEC checkStandingOrders',   
     @retry_attempts = 5,  
     @retry_interval = 5;  
+GO
+GO  
+EXEC sp_attach_schedule
+    @job_name = N'checkStandingOrders',
+    @schedule_name = N'Daily'
 GO

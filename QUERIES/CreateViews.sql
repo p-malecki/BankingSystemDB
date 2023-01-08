@@ -148,11 +148,12 @@ GO
 IF OBJECT_ID('NumberOfOperationsByCard', 'V') IS NOT NULL
 DROP VIEW NumberOfOperationsByCard 
 GO
+
 CREATE VIEW NumberOfOperationsByCard AS(
     SELECT Card,
         COUNT(*) 'Operations'
     FROM(
-        SELECT Card, Amount, [D	ate]
+        SELECT Card, Amount, [Date]
         FROM Withdraws
         UNION ALL
         SELECT Card, Amount, [Date]
@@ -251,8 +252,7 @@ SELECT DISTINCT Card,
         FROM Transactions
     ) CardOperations
 )
-
-
+GO
 IF OBJECT_ID('ATM_MalfunctionsHistory', 'IF') IS NOT NULL
 DROP FUNCTION ATM_MalfunctionsHistory 
 GO
@@ -350,15 +350,18 @@ RETURN(
 )
 GO
 
-IF OBJECT_ID(ClientOperationsByCategories) IS NOT NULL
+IF OBJECT_ID('ClientOperationsByCategories', 'IF') IS NOT NULL
 DROP FUNCTION ClientOperationsByCategories 
 GO
-CREATE FUNCTION ClientOperationsByCategories(@clientID INT)
+CREATE FUNCTION ClientOperationsByCategories(
+    @clientID INT
+
+)
 RETURNS TABLE
 AS
 RETURN(
     SELECT N.Category, N.Operations
-    FROM NumberOfOperationsByCategories N
+    FROM NumberOfOperationsByCategories() N
 	WHERE ClientID = @clientID
 )
 GO
@@ -453,7 +456,7 @@ GO
 -- test for client 4
 
 IF OBJECT_ID('DepartmentATMsBalance', 'IF') IS NOT NULL
-DROP FUNCTION De
+DROP FUNCTION DepartmentATMsBalance
 GO
 CREATE FUNCTION DepartmentATMsBalance(@departamentID INT)
 RETURNS TABLE
