@@ -30,8 +30,6 @@ public class AdminPanelController implements Initializable{
     @FXML
     public Button numberOfTransfersByClientButton;
     @FXML
-    public Button numberOfOperationsByAccountsAndCategoriesButton;
-    @FXML
     public Button atmByMonthButton;
     @FXML
     public Button atmMalfunctionsHistoryButton;
@@ -43,6 +41,8 @@ public class AdminPanelController implements Initializable{
     public Button addNewAccountButton;
     @FXML
     public Button addNewEmployeeButton;
+    @FXML
+    public Button numberOfPhoneTransfersByClient;
     @FXML
     private Label adminLabel;
     private Statement statement;
@@ -100,11 +100,11 @@ public class AdminPanelController implements Initializable{
     }
 
     public void numberOfOperationsByAccountsAndCategoriesOnClick(){
-        String query = "SELECT * FROM NumberOfOperationsByAccountsAndCatergories";
+        String query = "SELECT * FROM NumberOfOperationsByAccountsAndCategories";
         setupTableView(query);
     }
 
-    public void chosenClientOnClick(){
+    public void chosenAccountOnClick(){
         TextInputDialog dialog = new TextInputDialog("Enter account ID");
         dialog.setTitle("Operation");
         dialog.setHeaderText("Enter ID of the account you want to preview");
@@ -112,17 +112,18 @@ public class AdminPanelController implements Initializable{
         Optional<String> result = dialog.showAndWait();
         if(result.isPresent()){
             String query = "SELECT * FROM AccountHistory('" + result.get() + "')";
+            System.out.println(query);
             setupTableView(query);
         }
     }
 
     public void numberOfTransfersByClientOnClick(){
-        String query = "SELECT * FROM NumberOfTransfersByClient";
+        String query = "SELECT * FROM NumberOfTransfersByClient ORDER BY ClientID";
         setupTableView(query);
     }
 
     public void numberOfPhoneTransfersByClientOnClick(){
-        String query = "SELECT * FROM NumberOfPhoneTransfersByClient";
+        String query = "SELECT * FROM NumberOfPhoneTransfersByClient ORDER BY ClientID";
         setupTableView(query);
     }
 

@@ -56,20 +56,21 @@ public class ClientPanelController implements Initializable{
     }
 
     public void loadData(String account){
-        String query = "SELECT C.Name, A.AccountID, A.CurrentBalance\n" + "FROM Accounts A\n" +
-                "JOIN Clients C ON C.ClientID = A.ClientID\n" + "WHERE A.AccountID = '" + account + "'";
+        String query = "SELECT C.Name, A.AccountID, A.CurrentBalance, C.ClientID\n" + "FROM Accounts A\n" +
+                "JOIN Clients C ON C.ClientID = A.ClientID\n" + "WHERE A.AccountID = '" + account +  "'";
         try{
             ResultSet rs = statement.executeQuery(query);
             if(rs.next()){
-                String clientID = rs.getString(1);
+                String clientName = rs.getString(1);
                 String accountID = rs.getString(2);
                 String balance = rs.getString(3) + "$";
+                String clientID = rs.getString(4);
 
-                nameLabel.setText(clientID);
+                nameLabel.setText(clientName);
                 accountLabel.setText(accountID);
+                balanceLabel.setText(balance);
                 this.clientID = clientID;
                 this.accountID = accountID;
-                balanceLabel.setText(balance);
             }
         }
         catch(SQLException e){
@@ -119,6 +120,7 @@ public class ClientPanelController implements Initializable{
 
     public void viewOperationsByOperationType(){
         String query = "SELECT * FROM ClientOperationsByOperationType(" + clientID + ")";
+        System.out.println(query);
         setupTableView(query);
     }
 
