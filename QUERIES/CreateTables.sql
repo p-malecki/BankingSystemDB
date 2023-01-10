@@ -4,7 +4,9 @@ CREATE TABLE [Clients] (
   [DateOfBirth] DATE,
   [City] NVARCHAR(100),
   [Country] NVARCHAR(100),
-  [PhoneNumber] NVARCHAR(100) UNIQUE
+  [PhoneNumber] NVARCHAR(100) UNIQUE,
+
+  INDEX IdxPhoneNumber(PhoneNumber)
 )
 
 CREATE TABLE [AccountTypes] (
@@ -20,7 +22,9 @@ CREATE TABLE [Accounts] (
   [CurrentBalance] INT,
   [StartDate] DATE,
   [EndDate] DATE,
-  [Password] NVARCHAR(100)
+  [Password] NVARCHAR(100),
+  
+  INDEX IdxClientID(ClientID)
 )
 
 CREATE TABLE [Cards] (
@@ -31,15 +35,20 @@ CREATE TABLE [Cards] (
 )
 
 CREATE TABLE [Preferences] (
-  [ClientID] INT PRIMARY KEY REFERENCES [Clients] ([ClientID]),
+  [ClientID] INT FOREIGN KEY REFERENCES [Clients] ([ClientID]),
   [MainAccount] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]) ,
   [AllowPhoneTransfer] BIT
+
+  INDEX IdxClientID(ClientID),
+  INDEX IdxAccountID(MainAccount)
 )
 
 CREATE TABLE [SavingAccountDetails] (
-  [AccountID] NVARCHAR(100) PRIMARY KEY REFERENCES [Accounts] ([AccountID]),
+  [AccountID] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [InterestRate] NVARCHAR(100),
-  [Frequency] FLOAT
+  [Frequency] FLOAT,
+
+  INDEX IdxAccountID(AccountID)
 )
 
 CREATE TABLE [Departments] (
@@ -62,7 +71,9 @@ CREATE TABLE [Loans] (
   [Amount] MONEY,
   [StartDate] DATE,
   [EndDate] DATE,
-  [ServingEmployee] INT FOREIGN KEY REFERENCES [Employees] ([EmployeeID])
+  [ServingEmployee] INT FOREIGN KEY REFERENCES [Employees] ([EmployeeID]),
+
+  INDEX IdxAccountID(AccountID)
 )
 
 CREATE TABLE [ATMs] (
@@ -85,7 +96,9 @@ CREATE TABLE [Withdraws] (
   [Card] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
   [Amount] MONEY,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
-  [Date] DATE
+  [Date] DATE,
+
+  INDEX IdxCardID(Card)
 )
 
 CREATE TABLE [Deposits] (
@@ -93,7 +106,9 @@ CREATE TABLE [Deposits] (
   [Card] NVARCHAR(100) FOREIGN KEY REFERENCES [Cards] ([CardID]),
   [Amount] MONEY,
   [ATMID] INT FOREIGN KEY REFERENCES [ATMs] ([ATMID]),
-  [Date] DATE
+  [Date] DATE,
+
+  INDEX IdxCardID(Card)
 )
 
 CREATE TABLE [TransactionCategories] (
@@ -109,7 +124,9 @@ CREATE TABLE [StandingOrders] (
   [Title] NVARCHAR(100),
   [Frequency] INT,
   [StartDate] DATE,
-  [EndDate] DATE
+  [EndDate] DATE,
+
+  INDEX IdxAccountID(Sender)
 )
 
 CREATE TABLE [Transfers] (
@@ -120,7 +137,9 @@ CREATE TABLE [Transfers] (
   [Title] NVARCHAR(100),
   [Date] DATE,
   [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID]),
-  [StandingOrder] INT FOREIGN KEY REFERENCES [StandingOrders] ([StandingOrdersID])
+  [StandingOrder] INT FOREIGN KEY REFERENCES [StandingOrders] ([StandingOrdersID]),
+
+  INDEX IdxAccountID(Sender)
 )
 
 CREATE TABLE [Transactions] (
@@ -129,7 +148,9 @@ CREATE TABLE [Transactions] (
   [Receiver] NVARCHAR(100),
   [Amount] MONEY,
   [Date] DATE,
-  [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID])
+  [Category] INT FOREIGN KEY REFERENCES [TransactionCategories] ([CategoryID]),
+
+  INDEX IdxCardID(UsedCard)
 )
 
 CREATE TABLE [PhoneTransfers] (
