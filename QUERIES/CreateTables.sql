@@ -51,8 +51,8 @@ CREATE TABLE [SavingAccountDetails] (
   INDEX IdxAccountID(AccountID)
 )
 
-CREATE TABLE [Departments] (
-  [DepartmentID] INT IDENTITY PRIMARY KEY,
+CREATE TABLE [Branches] (
+  [BranchID] INT IDENTITY PRIMARY KEY,
   [Name] NVARCHAR(100),
   [City] NVARCHAR(100),
   [Country] NVARCHAR(100)
@@ -62,7 +62,7 @@ CREATE TABLE [Employees] (
   [EmployeeID] INT IDENTITY PRIMARY KEY,
   [Name] NVARCHAR(100),
   [DateOfSign] DATE,
-  [DepartmentID] INT FOREIGN KEY REFERENCES [Departments] ([DepartmentID])
+  [BranchID] INT FOREIGN KEY REFERENCES [Branches] ([BranchID])
 )
 
 CREATE TABLE [Loans] (
@@ -79,7 +79,7 @@ CREATE TABLE [Loans] (
 CREATE TABLE [ATMs] (
   [ATMID] INT IDENTITY PRIMARY KEY,
   [CurrentBalance] INT,
-  [SupervisorDepartment] INT REFERENCES [Departments] ([DepartmentID]),
+  [SupervisorDepartment] INT REFERENCES [Branches] ([BranchID]),
   [City] NVARCHAR(100)
 )
 

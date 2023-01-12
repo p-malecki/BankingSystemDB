@@ -290,7 +290,7 @@ GO
 CREATE PROCEDURE addNewEmployee
 @name NVARCHAR(100),
 @dateOfSign DATE,
-@departmentID INT
+@BranchID INT
 AS
 BEGIN
 	IF LEN(@name) < 2
@@ -299,13 +299,13 @@ BEGIN
 		RAISERROR('Date can not be in the future', 17, 1)
 	ELSE
 		INSERT INTO Employees VALUES
-		(@name, @dateOfSign, @departmentID)
+		(@name, @dateOfSign, @BranchID)
 END
 GO
 
-DROP PROCEDURE IF EXISTS addNewDepartments
+DROP PROCEDURE IF EXISTS addNewBranches
 GO
-CREATE PROCEDURE addNewDepartments
+CREATE PROCEDURE addNewBranches
 @name NVARCHAR(100),
 @city NVARCHAR(100),
 @country NVARCHAR(100)
@@ -314,7 +314,7 @@ BEGIN
 	IF LEN(@name) < 2 OR LEN(@city) < 2 OR LEN(@city) < 2
 		RAISERROR('To short parameters', 17, 1)
 	ELSE
-		INSERT INTO Departments VALUES
+		INSERT INTO Branches VALUES
 		(@name, @city, @country)
 END
 GO

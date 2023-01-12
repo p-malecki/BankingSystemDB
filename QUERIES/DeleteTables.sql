@@ -16,8 +16,8 @@ BEGIN
         DROP TABLE [Cards]
     IF OBJECT_ID('Clients', 'U') IS NOT NULL
         DROP TABLE [Clients]
-    IF OBJECT_ID('Departments', 'U') IS NOT NULL
-        DROP TABLE [Departments]
+    IF OBJECT_ID('Branches', 'U') IS NOT NULL
+        DROP TABLE [Branches]
     IF OBJECT_ID('Deposits', 'U') IS NOT NULL
         DROP TABLE [Deposits]
     IF OBJECT_ID('Employees', 'U') IS NOT NULL

@@ -1,34 +1,34 @@
-SET IDENTITY_INSERT [Departments] ON
-INSERT INTO [Departments] (DepartmentID, Name, City, Country) VALUES
-(1,'Department no. 119 in Balingueo','Balingueo','Philippines'),
-(2,'Department no. 97 in Boyle','Boyle','Ireland'),
-(3,'Department no. 30 in Ribeiro','Ribeiro','Portugal'),
-(4,'Department no. 96 in Manicaragua','Manicaragua','Cuba'),
-(5,'Department no. 83 in Sulang Tengah','Sulang Tengah','Indonesia'),
-(6,'Department no. 265 in Hidalgo','Hidalgo','Mexico'),
-(7,'Department no. 297 in Jhumra','Jhumra','Pakistan'),
-(8,'Department no. 259 in Kraków','Kraków','Poland'),
-(9,'Department no. 193 in Tsiombe','Tsiombe','Madagascar'),
-(10,'Department no. 292 in Baranowo','Baranowo','Poland'),
-(11,'Department no. 220 in Weekombaka','Weekombaka','Indonesia'),
-(12,'Department no. 258 in Gryfino','Gryfino','Poland'),
-(13,'Department no. 54 in Sigetec','Sigetec','Croatia'),
-(14,'Department no. 263 in Kelaniya','Kelaniya','Sri Lanka'),
-(15,'Department no. 113 in Farrokh Shahr','Farrokh Shahr','Iran'),
-(16,'Department no. 62 in Aleksandrovka','Aleksandrovka','Ukraine'),
-(17,'Department no. 69 in Sinchao','Sinchao','Peru'),
-(18,'Department no. 78 in Grodków','Grodków','Poland'),
-(19,'Department no. 271 in Rēzekne','Rēzekne','Latvia'),
-(20,'Department no. 29 in Parintins','Parintins','Brazil'),
-(21,'Department no. 61 in Santana do Paraíso','Santana do Paraíso','Brazil'),
-(22,'Department no. 216 in San Julian','San Julian','Philippines'),
-(23,'Department no. 161 in Saint-Quentin-en-Yvelines','Saint-Quentin-en-Yvelines','France'),
-(24,'Department no. 304 in Warszawa','Warszawa','Poland'),
-(25,'Department no. 47 in Hamakita','Hamakita','Japan')
-SET IDENTITY_INSERT [Departments] OFF
+SET IDENTITY_INSERT [Branches] ON
+INSERT INTO [Branches] (BranchID, Name, City, Country) VALUES
+(1,'Branch no. 119 in Balingueo','Balingueo','Philippines'),
+(2,'Branch no. 97 in Boyle','Boyle','Ireland'),
+(3,'Branch no. 30 in Ribeiro','Ribeiro','Portugal'),
+(4,'Branch no. 96 in Manicaragua','Manicaragua','Cuba'),
+(5,'Branch no. 83 in Sulang Tengah','Sulang Tengah','Indonesia'),
+(6,'Branch no. 265 in Hidalgo','Hidalgo','Mexico'),
+(7,'Branch no. 297 in Jhumra','Jhumra','Pakistan'),
+(8,'Branch no. 259 in Kraków','Kraków','Poland'),
+(9,'Branch no. 193 in Tsiombe','Tsiombe','Madagascar'),
+(10,'Branch no. 292 in Baranowo','Baranowo','Poland'),
+(11,'Branch no. 220 in Weekombaka','Weekombaka','Indonesia'),
+(12,'Branch no. 258 in Gryfino','Gryfino','Poland'),
+(13,'Branch no. 54 in Sigetec','Sigetec','Croatia'),
+(14,'Branch no. 263 in Kelaniya','Kelaniya','Sri Lanka'),
+(15,'Branch no. 113 in Farrokh Shahr','Farrokh Shahr','Iran'),
+(16,'Branch no. 62 in Aleksandrovka','Aleksandrovka','Ukraine'),
+(17,'Branch no. 69 in Sinchao','Sinchao','Peru'),
+(18,'Branch no. 78 in Grodków','Grodków','Poland'),
+(19,'Branch no. 271 in Rēzekne','Rēzekne','Latvia'),
+(20,'Branch no. 29 in Parintins','Parintins','Brazil'),
+(21,'Branch no. 61 in Santana do Paraíso','Santana do Paraíso','Brazil'),
+(22,'Branch no. 216 in San Julian','San Julian','Philippines'),
+(23,'Branch no. 161 in Saint-Quentin-en-Yvelines','Saint-Quentin-en-Yvelines','France'),
+(24,'Branch no. 304 in Warszawa','Warszawa','Poland'),
+(25,'Branch no. 47 in Hamakita','Hamakita','Japan')
+SET IDENTITY_INSERT [Branches] OFF
 
 SET IDENTITY_INSERT [Employees] ON
-INSERT INTO [Employees] (EmployeeID, Name, DateOfSign, DepartmentID) VALUES
+INSERT INTO [Employees] (EmployeeID, Name, DateOfSign, BranchID) VALUES
 (1,'Iolanthe Widdocks',CONVERT(DATE,'17.02.2007',105),22),
 (2,'Gus Benitti',CONVERT(DATE,'03.03.2006',105),15),
 (3,'Thedric Rawood',CONVERT(DATE,'19.09.2011',105),23),
@@ -144,7 +144,7 @@ INSERT INTO [Employees] (EmployeeID, Name, DateOfSign, DepartmentID) VALUES
 SET IDENTITY_INSERT [Employees] OFF
 
 SET IDENTITY_INSERT [ATMs] ON
-INSERT INTO [ATMs] (ATMID, CurrentBalance, SupervisorDepartment, City) VALUES
+INSERT INTO [ATMs] (ATMID, CurrentBalance, SupervisorBranch, City) VALUES
 (1,5691,5,'Kalipare'),
 (2,4546,2,'Cobh'),
 (3,7575,11,'Curahpacul Satu'),

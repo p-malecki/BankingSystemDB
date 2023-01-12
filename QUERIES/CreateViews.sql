@@ -455,17 +455,16 @@ RETURN(
 GO
 -- test for client 4
 
-IF OBJECT_ID('DepartmentATMsBalance', 'IF') IS NOT NULL
-DROP FUNCTION DepartmentATMsBalance
+IF OBJECT_ID('BranchATMsBalance', 'IF') IS NOT NULL
+DROP FUNCTION BranchATMsBalance
 GO
-CREATE FUNCTION DepartmentATMsBalance(@departamentID INT)
+CREATE FUNCTION BranchATMsBalance(@branchID INT)
 RETURNS TABLE
 AS
 RETURN(
     SELECT SUM(CurrentBalance) as balancesSUM
 	FROM ATMs
-	WHERE SupervisorDepartment = @departamentID
-	GROUP BY SupervisorDepartment
+	WHERE SupervisorBranch = @branchID
+	GROUP BY SupervisorBranch
 )
 GO
-

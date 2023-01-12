@@ -366,17 +366,17 @@ public class AdminPanelController implements Initializable{
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(20);
 
-        List<String> departmentsList = new ArrayList<>();
-        ResultSet rs = statement.executeQuery("SELECT DepartmentID, City FROM Departments");
+        List<String> branchesList = new ArrayList<>();
+        ResultSet rs = statement.executeQuery("SELECT BranchID, City FROM Branches");
         while(rs.next())
-            departmentsList.add(rs.getString(1) + ". " + rs.getString(2));
+            branchesList.add(rs.getString(1) + ". " + rs.getString(2));
 
         TextField name = new TextField("Name");
         name.setMaxWidth(WIDTH);
         DatePicker dateOfSign = new DatePicker(LocalDate.now());
         dateOfSign.setMaxWidth(WIDTH);
         ChoiceBox<String> department = new ChoiceBox<>();
-        department.getItems().addAll(departmentsList);
+        department.getItems().addAll(branchesList);
         department.setMaxWidth(WIDTH);
 
         vBox.getChildren().addAll(name, dateOfSign, department);
