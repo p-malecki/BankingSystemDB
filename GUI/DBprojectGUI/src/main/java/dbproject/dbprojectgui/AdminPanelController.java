@@ -59,7 +59,6 @@ public class AdminPanelController implements Initializable{
             throw new RuntimeException(e);
         }
     }
-
     public void setupTableView(String query){
         Dialog<ButtonType> tableView = new Dialog<>();
         tableView.initOwner(adminLabel.getScene().getWindow());
@@ -82,6 +81,18 @@ public class AdminPanelController implements Initializable{
         TableViewController controller = fxmlLoader.getController();
         controller.loadData(query);
         tableView.show();
+    }
+
+    public void backupOnClick(){
+        String query = "EXEC createBackup";
+        try{
+            statement.execute(query);
+        }
+        catch(SQLException e){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     public void allOperationsOnClick(){

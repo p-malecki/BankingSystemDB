@@ -1,3 +1,18 @@
+USE DBproject
+DROP PROCEDURE IF EXISTS createBackup
+GO
+CREATE PROCEDURE createBackup
+AS
+BEGIN 
+    DECLARE @path NVARCHAR(100) = 'C:\Users\Konrad\Desktop\BAZA BACKUP\'
+    DECLARE @filename NVARCHAR(100) = 'backup' + CONVERT(NVARCHAR, GETDATE(), 5) + '.bak'
+    DECLARE @final NVARCHAR(100) = @path + @filename
+
+    BACKUP DATABASE DBproject
+    TO DISK = @final
+END
+GO
+
 DROP PROCEDURE IF EXISTS checkLoans
 GO
 CREATE PROCEDURE checkLoans
@@ -73,7 +88,7 @@ BEGIN
         FROM @temp
         ORDER BY ID DESC OFFSET @rowCount - 1 ROWS FETCH NEXT 1 ROWS ONLY;
 
-       EXEC addNewTransfer @sender = @tmp_sender, @receiver = @tmp_receiver, @amount = @tmp_amount, @title = @tmp_title, @category=11
+       EXEC [dbo].[addNewTransfer] @sender = @tmp_sender, @receiver = @tmp_receiver, @amount = @tmp_amount, @title = @tmp_title, @category=11
 
        SET @rowCount = @rowCount - 1
     END 
@@ -83,9 +98,28 @@ GO
 USE msdb
 GO
 
+-- DELETING 
+IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkSavingAcoounts')
+    EXEC sp_delete_job @job_name = 'checkSavingAcoounts'
+GO
+IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkLoans')
+    EXEC sp_delete_job @job_name = 'checkLoans'
+GO
+IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkStandingOrders')
+    EXEC sp_delete_job @job_name = 'checkStandingOrders'
+GO
+IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'monthlyBackup')
+    EXEC sp_delete_job @job_name = 'monthlyBackup'
+GO
+
 IF EXISTS(SELECT * FROM dbo.sysschedules WHERE name = 'Daily')
     EXEC sp_delete_schedule @schedule_name = 'Daily'
 GO
+IF EXISTS(SELECT * FROM dbo.sysschedules WHERE name = 'Monthly')
+    EXEC sp_delete_schedule @schedule_name = 'Monthly'
+GO
+
+-- CREATING SCHEDULES
 EXEC sp_add_schedule
     @schedule_name = N'Daily',  
     @freq_type = 4, --daily  
@@ -93,9 +127,6 @@ EXEC sp_add_schedule
     @active_start_time = 000000 ; --every midnight
 GO
 
-IF EXISTS(SELECT * FROM dbo.sysschedules WHERE name = 'Monthly')
-    EXEC sp_delete_schedule @schedule_name = 'Monthly'
-GO
 EXEC sp_add_schedule
     @schedule_name = N'Monthly',  
     @freq_type = 16, --monthly  
@@ -104,9 +135,7 @@ EXEC sp_add_schedule
     @active_start_time = 000000 ; --every midnight
 GO
 
-IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkLoans')
-    EXEC sp_delete_job @job_name = 'checkLoans'
-GO
+-- LOANS CHECK
 EXEC sp_add_job
     @job_name = 'checkLoans'
 GO
@@ -123,9 +152,7 @@ EXEC sp_attach_schedule
     @schedule_name = N'Daily'
 GO
 
-IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkSavingAcoounts')
-    EXEC sp_delete_job @job_name = 'checkSavingAcoounts'
-GO
+-- SAVING ACCOUNTS CHECK
 EXEC sp_add_job
     @job_name = N'checkSavingAcoounts'
 GO
@@ -142,9 +169,7 @@ EXEC sp_attach_schedule
     @schedule_name = N'Monthly'
 GO  
 
-IF EXISTS(SELECT * FROM dbo.sysjobs WHERE name = 'checkStandingOrders')
-    EXEC sp_delete_job @job_name = 'checkStandingOrders'
-GO
+-- STANDING ORDERS CHECK
 EXEC sp_add_job
     @job_name = N'checkStandingOrders'
 GO
@@ -160,4 +185,21 @@ GO
 EXEC sp_attach_schedule
     @job_name = N'checkStandingOrders',
     @schedule_name = N'Daily'
+GO
+-- DATABASE BACKUP
+EXEC sp_add_job
+    @job_name = N'monthlyBackup'
+GO
+EXEC sp_add_jobstep  
+    @job_name = N'monthlyBackup',  
+    @step_name = N'CreateMonthlyBackupOfDB',  
+    @subsystem = N'TSQL',  
+    @command = N'EXEC createBackup',   
+    @retry_attempts = 5,  
+    @retry_interval = 5;  
+GO
+GO  
+EXEC sp_attach_schedule
+    @job_name = N'monthlyBackup',
+    @schedule_name = N'Monthly'
 GO

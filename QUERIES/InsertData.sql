@@ -144,7 +144,7 @@ INSERT INTO [Employees] (EmployeeID, Name, DateOfSign, BranchID) VALUES
 SET IDENTITY_INSERT [Employees] OFF
 
 SET IDENTITY_INSERT [ATMs] ON
-INSERT INTO [ATMs] (ATMID, CurrentBalance, SupervisorBranch, City) VALUES
+INSERT INTO [ATMs] (ATMID, CurrentBalance, SupervisorDepartment, City) VALUES
 (1,5691,5,'Kalipare'),
 (2,4546,2,'Cobh'),
 (3,7575,11,'Curahpacul Satu'),
