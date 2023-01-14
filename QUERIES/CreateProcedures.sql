@@ -59,45 +59,6 @@ BEGIN
 END
 GO
 
-
-DROP PROCEDURE IF EXISTS disactiveAccount
-GO
-CREATE PROCEDURE disactiveAccount
-@accountID NVARCHAR(100),
-@password NVARCHAR(100)
-AS
-BEGIN
-	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
-		RAISERROR('Account does not exist',17,1);
-	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
-		RAISERROR('Account is disactived',17,1);
-	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
-		RAISERROR('Password is not correct',17,1);
-	ELSE
-	BEGIN
-		DECLARE @clientID INT
-		SET @clientID = (SELECT A.ClientID FROM Accounts A WHERE A.AccountID = @accountID)
-		IF ( SELECT MainAccount FROM Preferences WHERE ClientID = @clientID) = @accountID
-		BEGIN
-			
-			IF (SELECT COUNT(*) FROM Accounts WHERE ClientID = @clientID and AccountID <> @accountID and EndDate IS NULL) > 0
-				UPDATE Preferences
-				SET MainAccount = ( SELECT TOP 1 AccountID FROM Accounts 
-									WHERE ClientID = @clientID and AccountID <> @accountID and EndDate IS NULL)
-				WHERE ClientID = @clientID
-			ELSE
-				UPDATE Preferences
-				SET MainAccount = NULL, AllowPhoneTransfer = 0
-				WHERE ClientID = @clientID
-		END
-
-		UPDATE Accounts
-		SET EndDate = CAST(GETDATE() AS Date)
-		WHERE AccountID = @accountID
-	END
-END
-GO
-
 DROP PROCEDURE IF EXISTS addNewCard
 GO
 CREATE PROCEDURE addNewCard
@@ -116,30 +77,6 @@ BEGIN
 	ELSE
 		INSERT INTO Cards VALUES
 		(@cardID, @accountID, @limit, @pin);
-END
-GO
-
-DROP PROCEDURE IF EXISTS changeCardLimit
-GO
-CREATE PROCEDURE changeCardLimit
-@cardID NVARCHAR(100),
-@limit INT,
-@accountID NVARCHAR(100),
-@password NVARCHAR(100)
-AS
-BEGIN
-	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
-		RAISERROR('Account does not exist',17,1);
-	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
-		RAISERROR('Account has been closed', 17 ,1)
-	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
-		RAISERROR('Password is not correct',17,1);
-	ELSE IF @limit <= 0
-		RAISERROR('Incorrect limit',17,1)
-	ELSE
-		UPDATE Cards
-		SET Limit = @limit
-		WHERE CardID = @cardID
 END
 GO
 
@@ -207,6 +144,36 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS addNewTransaction
+GO
+CREATE PROCEDURE addNewTransaction
+@cardID NVARCHAR(100),
+@receiver NVARCHAR(100),
+@amount MONEY,
+@title NVARCHAR(100),
+@category INT
+AS
+BEGIN
+	IF @amount <= 0
+		RAISERROR('Incorrect amount', 17 ,1)
+	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @cardID) IS NOT NULL
+		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @amount > (
+		SELECT CurrentBalance
+		FROM Accounts A
+		JOIN Cards C ON C.Account = A.AccountID
+		WHERE C.CardID = @cardID)
+		RAISERROR('Not enough funds', 17, 1)
+	ELSE IF @amount > (SELECT Limit FROM Cards WHERE CardID = @cardID)
+		RAISERROR('Amount greater then card limit',17,1)
+	ELSE IF @receiver = (SELECT Account FROM Cards WHERE CardID = @cardID)
+		RAISERROR('Incorrect operation', 17, 1)
+	ELSE
+		INSERT INTO Transactions VALUES
+		(@cardID, @receiver, @amount, GETDATE(), @category)
+END
+GO
+
 DROP PROCEDURE IF EXISTS addNewWithdraw
 GO
 CREATE PROCEDURE addNewWithdraw
@@ -255,113 +222,35 @@ BEGIN
 END
 GO
 
-DROP PROCEDURE IF EXISTS addNewTransaction
+DROP PROCEDURE IF EXISTS addStandingOrders
 GO
-CREATE PROCEDURE addNewTransaction
-@cardID NVARCHAR(100),
+CREATE PROCEDURE addStandingOrders
+@sender NVARCHAR(100),
 @receiver NVARCHAR(100),
 @amount MONEY,
 @title NVARCHAR(100),
-@category INT
+@frequency INT,
+@startDate DATE,
+@endDate DATE
 AS
 BEGIN
-	IF @amount <= 0
-		RAISERROR('Incorrect amount', 17 ,1)
-	ELSE IF (SELECT EndDate FROM Accounts JOIN Cards ON Account = AccountID WHERE CardID = @cardID) IS NOT NULL
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
-	ELSE IF @amount > (
-		SELECT CurrentBalance
-		FROM Accounts A
-		JOIN Cards C ON C.Account = A.AccountID
-		WHERE C.CardID = @cardID)
-		RAISERROR('Not enough funds', 17, 1)
-	ELSE IF @amount > (SELECT Limit FROM Cards WHERE CardID = @cardID)
-		RAISERROR('Amount greater then card limit',17,1)
-	ELSE IF @receiver = (SELECT Account FROM Cards WHERE CardID = @cardID)
-		RAISERROR('Incorrect operation', 17, 1)
+	ELSE IF @sender = @receiver OR @endDate = @startDate
+		RAISERROR('Incorrect operation',17,1)
+	ELSE IF @amount <= 0
+		RAISERROR('Incorrect amount',17,1)
+	ELSE IF @frequency <= 0 OR @frequency > (DATEDIFF(day, @startDate, @endDate))
+		RAISERROR('Incorrect frequency',17,1) 
+	ELSE IF @startDate < GETDATE()
+		RAISERROR('Start date can not be in the past', 17, 1)
+	ELSE IF @endDate < GETDATE()
+		RAISERROR('End date can not be in the past', 17, 1)
 	ELSE
-		INSERT INTO Transactions VALUES
-		(@cardID, @receiver, @amount, GETDATE(), @category)
-END
-GO
-
-DROP PROCEDURE IF EXISTS addNewEmployee
-GO
-CREATE PROCEDURE addNewEmployee
-@name NVARCHAR(100),
-@dateOfSign DATE,
-@BranchID INT
-AS
-BEGIN
-	IF LEN(@name) < 2
-		RAISERROR('To short name', 17, 1)
-	ELSE IF @dateOfSign > GETDATE()
-		RAISERROR('Date can not be in the future', 17, 1)
-	ELSE
-		INSERT INTO Employees VALUES
-		(@name, @dateOfSign, @BranchID)
-END
-GO
-
-DROP PROCEDURE IF EXISTS addNewBranches
-GO
-CREATE PROCEDURE addNewBranches
-@name NVARCHAR(100),
-@city NVARCHAR(100),
-@country NVARCHAR(100)
-AS
-BEGIN
-	IF LEN(@name) < 2 OR LEN(@city) < 2 OR LEN(@city) < 2
-		RAISERROR('To short parameters', 17, 1)
-	ELSE
-		INSERT INTO Branches VALUES
-		(@name, @city, @country)
-END
-GO
-
-DROP PROCEDURE IF EXISTS addNewATM
-GO
-CREATE PROCEDURE addNewATM
-@currentBalance INT,
-@supervisorDepartment INT,
-@city NVARCHAR(100)
-AS
-BEGIN
-	IF LEN(@city) < 2
-		RAISERROR('To short city name', 17, 1)
-	ELSE IF @currentBalance < 0
-		RAISERROR('Incorrect current balance', 17, 1)
-	ELSE
-		INSERT INTO ATMs VALUES
-		(@currentBalance, @supervisorDepartment, @city)
-END
-GO
-
-DROP PROCEDURE IF EXISTS addNewTransactionCategory
-GO
-CREATE PROCEDURE addNewTransactionCategory
-@description NVARCHAR(100)
-AS
-BEGIN
-	IF LEN(@description) >= 2
-		INSERT INTO TransactionCategories VALUES
-		(@description)
-	ELSE
-		RAISERROR('To short description', 17, 1)
-END
-GO
-
-DROP PROCEDURE IF EXISTS addNewAccountType
-GO
-CREATE PROCEDURE addNewAccountType
-@description NVARCHAR(100)
-AS
-BEGIN
-	IF LEN(@description) >= 2
-		INSERT INTO AccountTypes VALUES
-		(@description)
-	ELSE
-		RAISERROR('To short description', 17, 1)
+		INSERT INTO StandingOrders VALUES
+		(@sender, @receiver, @amount, @title, @frequency, @startDate, @endDate)
 END
 GO
 
@@ -392,6 +281,148 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS addNewBranches
+GO
+CREATE PROCEDURE addNewBranches
+@name NVARCHAR(100),
+@city NVARCHAR(100),
+@country NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@name) < 2 OR LEN(@city) < 2 OR LEN(@city) < 2
+		RAISERROR('To short parameters', 17, 1)
+	ELSE
+		INSERT INTO Branches VALUES
+		(@name, @city, @country)
+END
+GO
+
+DROP PROCEDURE IF EXISTS addNewEmployee
+GO
+CREATE PROCEDURE addNewEmployee
+@name NVARCHAR(100),
+@dateOfSign DATE,
+@BranchID INT
+AS
+BEGIN
+	IF LEN(@name) < 2
+		RAISERROR('To short name', 17, 1)
+	ELSE IF @dateOfSign > GETDATE()
+		RAISERROR('Date can not be in the future', 17, 1)
+	ELSE
+		INSERT INTO Employees VALUES
+		(@name, @dateOfSign, @BranchID)
+END
+GO
+
+DROP PROCEDURE IF EXISTS addNewATM
+GO
+CREATE PROCEDURE addNewATM
+@currentBalance INT,
+@supervisorDepartment INT,
+@city NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@city) < 2
+		RAISERROR('To short city name', 17, 1)
+	ELSE IF @currentBalance < 0
+		RAISERROR('Incorrect current balance', 17, 1)
+	ELSE
+		INSERT INTO ATMs VALUES
+		(@currentBalance, @supervisorDepartment, @city)
+END
+GO
+
+DROP PROCEDURE IF EXISTS addNewAccountType
+GO
+CREATE PROCEDURE addNewAccountType
+@description NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@description) >= 2
+		INSERT INTO AccountTypes VALUES
+		(@description)
+	ELSE
+		RAISERROR('To short description', 17, 1)
+END
+GO
+
+DROP PROCEDURE IF EXISTS addNewTransactionCategory
+GO
+CREATE PROCEDURE addNewTransactionCategory
+@description NVARCHAR(100)
+AS
+BEGIN
+	IF LEN(@description) >= 2
+		INSERT INTO TransactionCategories VALUES
+		(@description)
+	ELSE
+		RAISERROR('To short description', 17, 1)
+END
+GO
+
+DROP PROCEDURE IF EXISTS disactiveAccount
+GO
+CREATE PROCEDURE disactiveAccount
+@accountID NVARCHAR(100),
+@password NVARCHAR(100)
+AS
+BEGIN
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
+		RAISERROR('Account is disactived',17,1);
+	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Password is not correct',17,1);
+	ELSE
+	BEGIN
+		DECLARE @clientID INT
+		SET @clientID = (SELECT A.ClientID FROM Accounts A WHERE A.AccountID = @accountID)
+		IF ( SELECT MainAccount FROM Preferences WHERE ClientID = @clientID) = @accountID
+		BEGIN
+			
+			IF (SELECT COUNT(*) FROM Accounts WHERE ClientID = @clientID and AccountID <> @accountID and EndDate IS NULL) > 0
+				UPDATE Preferences
+				SET MainAccount = ( SELECT TOP 1 AccountID FROM Accounts 
+									WHERE ClientID = @clientID and AccountID <> @accountID and EndDate IS NULL)
+				WHERE ClientID = @clientID
+			ELSE
+				UPDATE Preferences
+				SET MainAccount = NULL, AllowPhoneTransfer = 0
+				WHERE ClientID = @clientID
+		END
+
+		UPDATE Accounts
+		SET EndDate = CAST(GETDATE() AS Date)
+		WHERE AccountID = @accountID
+	END
+END
+GO
+
+DROP PROCEDURE IF EXISTS changeCardLimit
+GO
+CREATE PROCEDURE changeCardLimit
+@cardID NVARCHAR(100),
+@limit INT,
+@accountID NVARCHAR(100),
+@password NVARCHAR(100)
+AS
+BEGIN
+	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Account does not exist',17,1);
+	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
+		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Password is not correct',17,1);
+	ELSE IF @limit <= 0
+		RAISERROR('Incorrect limit',17,1)
+	ELSE
+		UPDATE Cards
+		SET Limit = @limit
+		WHERE CardID = @cardID
+END
+GO
+
 DROP PROCEDURE IF EXISTS reportATMsMalfunction
 GO
 CREATE PROCEDURE reportATMsMalfunction
@@ -407,37 +438,5 @@ BEGIN
 	ELSE
 		INSERT INTO ATMsMalfunctions VALUES
 		(@ATMID, @description, GETDATE(), @reportingEmployee)
-END
-GO
-
-DROP PROCEDURE IF EXISTS addStandingOrders
-GO
-CREATE PROCEDURE addStandingOrders
-@sender NVARCHAR(100),
-@receiver NVARCHAR(100),
-@amount MONEY,
-@title NVARCHAR(100),
-@frequency INT,
-@startDate DATE,
-@endDate DATE
-AS
-BEGIN
-	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @sender)
-		RAISERROR('Account does not exist',17,1);
-	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @sender) IS NOT NULL
-		RAISERROR('Account has been closed', 17 ,1)
-	ELSE IF @sender = @receiver OR @endDate = @startDate
-		RAISERROR('Incorrect operation',17,1)
-	ELSE IF @amount <= 0
-		RAISERROR('Incorrect amount',17,1)
-	ELSE IF @frequency <= 0 OR @frequency > (DATEDIFF(day, @startDate, @endDate))
-		RAISERROR('Incorrect frequency',17,1) 
-	ELSE IF @startDate < GETDATE()
-		RAISERROR('Start date can not be in the past', 17, 1)
-	ELSE IF @endDate < GETDATE()
-		RAISERROR('End date can not be in the past', 17, 1)
-	ELSE
-		INSERT INTO StandingOrders VALUES
-		(@sender, @receiver, @amount, @title, @frequency, @startDate, @endDate)
 END
 GO
