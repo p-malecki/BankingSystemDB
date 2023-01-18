@@ -31,7 +31,7 @@ CREATE TABLE [Cards] (
   [CardID] NVARCHAR(100) PRIMARY KEY,
   [Account] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
   [Limit] INT,
-  [PIN] INT
+  [PIN] NVARCHAR(100)
 )
 
 CREATE TABLE [Preferences] (

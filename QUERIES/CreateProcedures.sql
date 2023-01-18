@@ -65,13 +65,15 @@ CREATE PROCEDURE addNewCard
 @cardID NVARCHAR(100),
 @accountID NVARCHAR(100),
 @limit INT,
-@pin INT
+@pin NVARCHAR(100),
 AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Account does not exist',17,1);
 	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
 		RAISERROR('Account has been closed', 17 ,1)
+	ELSE IF LEN(@pin) <> 4
+		RAISERROR('Incorrect pin',17,1);
 	ELSE IF @limit < 0
 		RAISERROR('Incorrect limit',17,1);
 	ELSE
@@ -399,26 +401,63 @@ BEGIN
 END
 GO
 
-DROP PROCEDURE IF EXISTS changeCardLimit
+DROP PROCEDURE IF EXISTS changeAccountPassword
 GO
-CREATE PROCEDURE changeCardLimit
-@cardID NVARCHAR(100),
-@limit INT,
+CREATE PROCEDURE changeAccountPassword
 @accountID NVARCHAR(100),
-@password NVARCHAR(100)
+@prev_password NVARCHAR(100),
+@new_password NVARCHAR(100)
 AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
 		RAISERROR('Account does not exist',17,1);
 	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
-		RAISERROR('Account has been closed', 17 ,1)
+		RAISERROR('Account is disactived',17,1);
 	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
-		RAISERROR('Password is not correct',17,1);
+		RAISERROR('Previous password is not correct',17,1);
+	ELSE
+	BEGIN
+		UPDATE Accounts
+		SET Password = @new_password
+		WHERE AccountID = @accountID
+	END
+END
+GO
+
+DROP PROCEDURE IF EXISTS changeCardLimit
+GO
+CREATE PROCEDURE changeCardLimit
+@cardID NVARCHAR(100),
+@limit INT,
+@pin NVARCHAR(100)
+AS
+BEGIN
+	IF ELSE IF @pin <> (SELECT PIN FROM Accounts WHERE CardID = @cardID)
+		RAISERROR('PIN is not correct',17,1);
 	ELSE IF @limit <= 0
 		RAISERROR('Incorrect limit',17,1)
 	ELSE
 		UPDATE Cards
 		SET Limit = @limit
+		WHERE CardID = @cardID
+END
+GO
+
+DROP PROCEDURE IF EXISTS changeCardPIN
+GO
+CREATE PROCEDURE changeCardLimit
+@cardID NVARCHAR(100),
+@prevPIN NVARCHAR(100),
+@newPIN NVARCHAR(100)
+AS
+BEGIN
+	IF ELSE IF @pin <> (SELECT PIN FROM Accounts WHERE CardID = @cardID)
+		RAISERROR('Previous PIN is not correct',17,1);
+	ELSE IF @limit <= 0
+		RAISERROR('Incorrect limit',17,1)
+	ELSE
+		UPDATE Cards
+		SET PIN = @newPIN
 		WHERE CardID = @cardID
 END
 GO
