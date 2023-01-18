@@ -57,7 +57,7 @@ public class ClientPanelController implements Initializable{
 
     public void loadData(String account){
         String query = "SELECT C.Name, A.AccountID, A.CurrentBalance, C.ClientID\n" + "FROM Accounts A\n" +
-                "JOIN Clients C ON C.ClientID = A.ClientID\n" + "WHERE A.AccountID = '" + account +  "'";
+                "JOIN Clients C ON C.ClientID = A.ClientID\n" + "WHERE A.AccountID = '" + account + "'";
         try{
             ResultSet rs = statement.executeQuery(query);
             if(rs.next()){
@@ -125,7 +125,8 @@ public class ClientPanelController implements Initializable{
     }
 
     public void viewClientOperationsByCategories(){
-        String query = "SELECT * FROM ClientOperationsByCategories(" + clientID + ")";
+        String query = "SELECT T.Description, C.Operations FROM ClientOperationsByCategories(" + clientID +
+                ") C JOIN TransactionCategories T ON T.CategoryID = C.Category";
         setupTableView(query);
     }
 
@@ -271,15 +272,17 @@ public class ClientPanelController implements Initializable{
                 vBox.getChildren().addAll(cards, PIN, limit);
                 dialog.getDialogPane().setContent(vBox);
                 dialog.setResultConverter(button -> {
-                    if(button.equals(ButtonType.OK)) {
+                    if(button.equals(ButtonType.OK)){
                         ResultSet rs2 = null;
-                        try {
+                        try{
                             rs2 = statement.executeQuery("SELECT dbo.GetPIN('" + cards.getValue() + "')");
                             if(rs2.next()){
                                 if(rs2.getString(1).equals(PIN.getText()))
-                                    return "UPDATE Cards SET Limit = " + limit.getText() + "WHERE CardID = '" + cards.getValue() + "'";
+                                    return "UPDATE Cards SET Limit = " + limit.getText() + "WHERE CardID = '" +
+                                            cards.getValue() + "'";
                             }
-                        } catch (SQLException e) {
+                        }
+                        catch(SQLException e){
                             return null;
                         }
                     }
