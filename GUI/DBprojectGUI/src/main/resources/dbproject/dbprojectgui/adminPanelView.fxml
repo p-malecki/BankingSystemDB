@@ -32,12 +32,12 @@
                 <Button fx:id="numberOfPhoneTransfersByClient" onAction="#numberOfPhoneTransfersByClientOnClick" prefHeight="25.0" prefWidth="300.0" text="Display number of phone transfer by client" />
                 <Button fx:id="atmByMonthButton" onAction="#atmByMonthOnClick" prefHeight="25.0" prefWidth="300.0" text="Display ATM by month" />
                 <Button fx:id="atmMalfunctionsHistoryButton" onAction="#atmMalfunctionsHistoryOnClick" prefHeight="25.0" prefWidth="300.0" text="Display ATM history" />
-            <opaqueInsets>
-               <Insets />
-            </opaqueInsets>
-            <padding>
-               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
+                <opaqueInsets>
+                    <Insets />
+                </opaqueInsets>
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                </padding>
             </VBox>
             <VBox spacing="20.0" style="-fx-border-color: lightgrey; -fx-border-width: 1px; -fx-border-radius: 20px">
                 <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="300.0" text="PROCEDURES">
@@ -51,19 +51,23 @@
                 <Button fx:id="addNewEmployeeButton" onAction="#newEmployeeOnClick" prefHeight="25.0" prefWidth="300.0" text="Add new employee" />
                 <Button onAction="#disactiveAccount" prefHeight="25.0" prefWidth="300.0" text="Disactivate account" />
                 <Button onAction="#backupOnClick" prefHeight="25.0" prefWidth="300.0" text="Create database backup" />
-            <padding>
-               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                </padding>
             </VBox>
             <padding>
                 <Insets top="25.0" />
             </padding>
         </HBox>
     </center>
-   <bottom>
-      <Label text="Copyright KP2023® " textFill="#979797" BorderPane.alignment="CENTER">
+    <bottom>
+        <Label alignment="BOTTOM_CENTER" contentDisplay="BOTTOM" text="Copyright KP2023®" textAlignment="CENTER" textFill="#979797" BorderPane.alignment="BOTTOM_CENTER">
          <padding>
-            <Insets bottom="5.0" top="10.0" />
-         </padding></Label>
-   </bottom>
+            <Insets top="10.0" />
+         </padding>
+         <BorderPane.margin>
+            <Insets top="10.0" />
+         </BorderPane.margin>
+        </Label>
+    </bottom>
 </BorderPane>
