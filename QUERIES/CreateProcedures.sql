@@ -65,7 +65,7 @@ CREATE PROCEDURE addNewCard
 @cardID NVARCHAR(100),
 @accountID NVARCHAR(100),
 @limit INT,
-@pin NVARCHAR(100),
+@pin NVARCHAR(100)
 AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
@@ -410,11 +410,11 @@ CREATE PROCEDURE changeAccountPassword
 AS
 BEGIN
 	IF NOT EXISTS (SELECT AccountID FROM Accounts WHERE AccountID = @accountID)
-		RAISERROR('Account does not exist',17,1);
+		RAISERROR('Account does not exist',17,1)
 	ELSE IF (SELECT EndDate FROM Accounts WHERE AccountID = @accountID) IS NOT NULL
-		RAISERROR('Account is disactived',17,1);
-	ELSE IF @password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
-		RAISERROR('Previous password is not correct',17,1);
+		RAISERROR('Account is disactived',17,1)
+	ELSE IF @prev_password <> (SELECT Password FROM Accounts WHERE AccountID = @accountID)
+		RAISERROR('Previous password is not correct',17,1)
 	ELSE
 	BEGIN
 		UPDATE Accounts
@@ -432,8 +432,8 @@ CREATE PROCEDURE changeCardLimit
 @pin NVARCHAR(100)
 AS
 BEGIN
-	IF ELSE IF @pin <> (SELECT PIN FROM Accounts WHERE CardID = @cardID)
-		RAISERROR('PIN is not correct',17,1);
+	IF @pin <> (SELECT PIN FROM Cards WHERE CardID = @cardID)
+		RAISERROR('PIN is not correct',17,1)
 	ELSE IF @limit <= 0
 		RAISERROR('Incorrect limit',17,1)
 	ELSE
@@ -445,16 +445,14 @@ GO
 
 DROP PROCEDURE IF EXISTS changeCardPIN
 GO
-CREATE PROCEDURE changeCardLimit
+CREATE PROCEDURE changeCardPIN
 @cardID NVARCHAR(100),
 @prevPIN NVARCHAR(100),
 @newPIN NVARCHAR(100)
 AS
 BEGIN
-	IF ELSE IF @pin <> (SELECT PIN FROM Accounts WHERE CardID = @cardID)
-		RAISERROR('Previous PIN is not correct',17,1);
-	ELSE IF @limit <= 0
-		RAISERROR('Incorrect limit',17,1)
+	IF @prevPIN <> (SELECT PIN FROM Cards WHERE CardID = @cardID)
+		RAISERROR('Previous PIN is not correct',17,1)
 	ELSE
 		UPDATE Cards
 		SET PIN = @newPIN

@@ -50,7 +50,7 @@ BEGIN
             @frequency = Frequency,
             @balance = CurrentBalance
         FROM @temp
-        ORDER BY ID DESC OFFSET @rowCount - 1 ROWS FETCH NEXT 1 ROWS ONLY;
+        ORDER BY ID DESC OFFSET @rowCount - 1 ROWS FETCH NEXT 1 ROWS ONLY
 
         DECLARE @amount MONEY = CAST(@balance * @frequency AS MONEY)
         
@@ -86,7 +86,7 @@ BEGIN
             @tmp_amount = Amount,
 			@tmp_title = Title
         FROM @temp
-        ORDER BY ID DESC OFFSET @rowCount - 1 ROWS FETCH NEXT 1 ROWS ONLY;
+        ORDER BY ID DESC OFFSET @rowCount - 1 ROWS FETCH NEXT 1 ROWS ONLY
 
        EXEC [dbo].[addNewTransfer] @sender = @tmp_sender, @receiver = @tmp_receiver, @amount = @tmp_amount, @title = @tmp_title, @category=11
 
