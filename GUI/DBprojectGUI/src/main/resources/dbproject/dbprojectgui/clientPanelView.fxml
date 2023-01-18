@@ -60,6 +60,7 @@
                             <String fx:value="Transfer"/>
                             <String fx:value="Phone transfer"/>
                             <String fx:value="Transfer to own account"/>
+                            <String fx:value="Create new card"/>
                         </FXCollections>
                     </items>
                 </ChoiceBox>

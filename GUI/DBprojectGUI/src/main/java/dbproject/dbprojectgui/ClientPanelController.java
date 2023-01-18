@@ -113,8 +113,9 @@ public class ClientPanelController implements Initializable{
     }
 
     public void viewCardsAndDetails(){
-        String query = "SELECT CD.* FROM Cards C JOIN CardDetails CD ON CD.Card = C.CardID " + "WHERE C.Account = '" +
-                accountID + "'";
+        String query =
+                "SELECT CD.* FROM Cards C JOIN CardDetails CD ON CD.CardID = C.CardID " + "WHERE C.Account " + "=" +
+                        " '" + accountID + "'";
         setupTableView(query);
     }
 
@@ -189,6 +190,61 @@ public class ClientPanelController implements Initializable{
                 data.add("Title");
                 data.add("Category");
             }
+            case ("Create new card") -> {
+                Dialog<ArrayList<String>> dialog = new Dialog<>();
+                final double WIDTH = 250.0;
+                dialog.setTitle("Operation");
+                dialog.setHeaderText("Type card ID, limit and PIN");
+                dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+                VBox vBox = new VBox();
+                vBox.setAlignment(Pos.CENTER);
+                vBox.setSpacing(20);
+
+                TextField accountId = new TextField("Account ID");
+                accountId.setMaxWidth(WIDTH);
+                accountId.setText(accountID);
+                accountId.setDisable(true);
+                TextField cardId = new TextField("Card ID");
+                accountId.setMaxWidth(WIDTH);
+                TextField limit = new TextField("Limit");
+                limit.setMaxWidth(WIDTH);
+                TextField PIN = new TextField("PIN");
+                PIN.setMaxWidth(WIDTH);
+
+                vBox.getChildren().addAll(accountId, cardId, limit, PIN);
+                dialog.getDialogPane().setContent(vBox);
+                dialog.setResultConverter(button -> {
+                    if(button.equals(ButtonType.OK)){
+                        ArrayList<String> result = new ArrayList<>();
+                        result.add(cardId.getText());
+                        result.add(accountId.getText());
+                        result.add(limit.getText());
+                        result.add(PIN.getText());
+                        return result;
+                    }
+                    return null;
+                });
+
+                Optional<ArrayList<String>> result = dialog.showAndWait();
+                if(result.isPresent()){
+                    ArrayList<String> list = result.get();
+                    String query =
+                            "EXEC addNewCard '" + list.get(0) + "', '" + list.get(1) + "', " + list.get(2) + ", '" +
+                                    list.get(3) + "'";
+                    System.out.println(query);
+                    try{
+                        statement.execute(query);
+                    }
+                    catch(SQLException e){
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setHeaderText(e.getMessage());
+                        alert.showAndWait();
+                    }
+                }
+                return;
+            }
         }
 
         Dialog<ButtonType> operationDialog = new Dialog<>();
@@ -240,14 +296,17 @@ public class ClientPanelController implements Initializable{
                 ChoiceBox<String> cards = new ChoiceBox<>();
                 cards.getItems().addAll(cardsList);
                 cards.setMaxWidth(WIDTH);
-                TextField PIN = new TextField("New PIN");
-                PIN.setMaxWidth(WIDTH);
+                TextField oldPIN = new TextField("Old PIN");
+                oldPIN.setMaxWidth(WIDTH);
+                TextField newPIN = new TextField("New PIN");
+                newPIN.setMaxWidth(WIDTH);
 
-                vBox.getChildren().addAll(cards, PIN);
+                vBox.getChildren().addAll(cards, oldPIN, newPIN);
                 dialog.getDialogPane().setContent(vBox);
                 dialog.setResultConverter(button -> {
                     if(button.equals(ButtonType.OK))
-                        return "UPDATE Cards SET PIN = " + PIN.getText() + "WHERE CardID = '" + cards.getValue() + "'";
+                        return "EXEC changeCardPIN '" + cards.getValue() + "', '" + oldPIN.getText() + "', '" +
+                                newPIN.getText() + "'";
 
                     return null;
                 });
@@ -277,9 +336,8 @@ public class ClientPanelController implements Initializable{
                         try{
                             rs2 = statement.executeQuery("SELECT dbo.GetPIN('" + cards.getValue() + "')");
                             if(rs2.next()){
-                                if(rs2.getString(1).equals(PIN.getText()))
-                                    return "UPDATE Cards SET Limit = " + limit.getText() + "WHERE CardID = '" +
-                                            cards.getValue() + "'";
+                                return "EXEC changeCardLimit '" + cards.getValue() + "', " + limit.getText() + ", " +
+                                        "'" + PIN.getText() + "'";
                             }
                         }
                         catch(SQLException e){
@@ -305,8 +363,8 @@ public class ClientPanelController implements Initializable{
                         try{
                             ResultSet rs = statement.executeQuery("SELECT dbo.GetPassword('" + accountID + "')");
                             if(rs.next() && rs.getString(1).equals(oldPassword.getText()))
-                                return "UPDATE Accounts SET Password = '" + newPassword.getText() + "' WHERE " +
-                                        "AccountID = '" + accountID + "'";
+                                return "EXEC changeAccountPassword '" + accountID + "', '" + oldPassword.getText() +
+                                        "', '" + newPassword.getText() + "'";
                             else{
                                 Alert alert = new Alert(Alert.AlertType.WARNING);
                                 alert.setHeaderText("Wrong password");

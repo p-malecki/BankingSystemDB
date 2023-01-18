@@ -293,6 +293,51 @@ public class AdminPanelController implements Initializable{
         }
     }
 
+    public void disactiveAccount(){
+        Dialog<ArrayList<String>> dialog = new Dialog<>();
+        final double WIDTH = 250.0;
+        dialog.setTitle("Operation");
+        dialog.setHeaderText("Type account name and it's password");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(20);
+
+        TextField accountId = new TextField("AccountID");
+        accountId.setMaxWidth(WIDTH);
+        TextField password = new TextField("Password");
+        password.setMaxWidth(WIDTH);
+
+        vBox.getChildren().addAll(accountId, password);
+        dialog.getDialogPane().setContent(vBox);
+        dialog.setResultConverter(button -> {
+            if(button.equals(ButtonType.OK)){
+                ArrayList<String> result = new ArrayList<>();
+                result.add(accountId.getText());
+                result.add(password.getText());
+                return result;
+            }
+            return null;
+        });
+
+        Optional<ArrayList<String>> result = dialog.showAndWait();
+        if(result.isPresent()){
+            ArrayList<String> list = result.get();
+            String query = "EXEC disactiveAccount '" + list.get(0) + "', '" + list.get(1) + "'";
+            System.out.println(query);
+            try{
+                statement.execute(query);
+            }
+            catch(SQLException e){
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText(e.getMessage());
+                alert.showAndWait();
+            }
+        }
+    }
+
     public void newAccountOnClick() throws SQLException{
 //        @accountID NVARCHAR(100),
 //        @clientID INT,

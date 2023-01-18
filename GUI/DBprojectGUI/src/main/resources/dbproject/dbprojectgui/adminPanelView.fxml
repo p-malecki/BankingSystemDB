@@ -1,60 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dbproject.dbprojectgui.AdminPanelController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbproject.dbprojectgui.AdminPanelController">
     <top>
-        <Pane prefHeight="55.0" prefWidth="600.0" style="-fx-background-color: eeeeee;" BorderPane.alignment="CENTER">
-            <children>
-                <Label fx:id="adminLabel" layoutX="228.0" layoutY="10.0" text="Admin panel">
-                    <font>
-                        <Font name="System Bold" size="24.0"/>
-                    </font>
-                </Label>
-            </children>
+        <Pane prefHeight="55.0" prefWidth="700.0" style="-fx-background-color: eeeeee;" BorderPane.alignment="CENTER">
+            <Label fx:id="adminLabel" alignment="CENTER" contentDisplay="CENTER" layoutY="10.0" prefHeight="35.0" prefWidth="700.0" text="Admin panel" textAlignment="CENTER">
+                <font>
+                    <Font name="System Bold" size="24.0" />
+                </font>
+            </Label>
         </Pane>
     </top>
     <center>
-        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0" BorderPane.alignment="CENTER">
-            <children>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display all operations" fx:id="allOperationsButton"
-                        onAction="#allOperationsOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display operations per account"
-                        fx:id="numberOfOperationsByAccountButton"
-                        onAction="#numberOfOperationsByAccountOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display operations per client"
-                        fx:id="numberOfOperationsByClientButton"
-                        onAction="#numberOfOperationsByClientOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display all operations per account with category"
-                        fx:id="numberOfOperationsByAccountsAndCatergoriesButton"
-                        onAction="#numberOfOperationsByAccountsAndCategoriesOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display chosen account" fx:id="chosenClientButton"
-                        onAction="#chosenAccountOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display number of transfer by client"
-                        fx:id="numberOfTransfersByClientButton"
-                        onAction="#numberOfTransfersByClientOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0"
-                        text="Display number of phone transfer by client"
-                        fx:id="numberOfPhoneTransfersByClient"
-                        onAction="#numberOfPhoneTransfersByClientOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display ATM by month" fx:id="atmByMonthButton"
-                        onAction="#atmByMonthOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Display ATM history"
-                        fx:id="atmMalfunctionsHistoryButton" onAction="#atmMalfunctionsHistoryOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Report ATM malfunction"
-                        fx:id="reportAtmMalfunctionButton" onAction="#reportAtmMalfunctionOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Add new client" fx:id="addNewClientButton"
-                        onAction="#newClientOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Add new account" fx:id="addNewAccountButton"
-                        onAction="#newAccountOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Add new employee" fx:id="addNewEmployeeButton"
-                        onAction="#newEmployeeOnClick"/>
-                <Button prefHeight="25.0" prefWidth="300.0" text="Create database backup" onAction="#backupOnClick"/>
-            </children>
-        </VBox>
+        <HBox alignment="CENTER" prefHeight="200.0" prefWidth="700.0" spacing="30.0" BorderPane.alignment="CENTER">
+            <VBox spacing="20.0" style="-fx-border-color: lightgrey; -fx-border-width: 1px; -fx-border-radius: 20px">
+                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="300.0" text="STATISTICS">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <Button fx:id="allOperationsButton" onAction="#allOperationsOnClick" prefHeight="25.0" prefWidth="300.0" text="Display all operations" />
+                <Button fx:id="numberOfOperationsByAccountButton" onAction="#numberOfOperationsByAccountOnClick" prefHeight="25.0" prefWidth="300.0" text="Display operations per account" />
+                <Button fx:id="numberOfOperationsByClientButton" onAction="#numberOfOperationsByClientOnClick" prefHeight="25.0" prefWidth="300.0" text="Display operations per client" />
+                <Button fx:id="numberOfOperationsByAccountsAndCatergoriesButton" onAction="#numberOfOperationsByAccountsAndCategoriesOnClick" prefHeight="25.0" prefWidth="300.0" text="Display all operations per account with category" />
+                <Button fx:id="chosenClientButton" onAction="#chosenAccountOnClick" prefHeight="25.0" prefWidth="300.0" text="Display chosen account" />
+                <Button fx:id="numberOfTransfersByClientButton" onAction="#numberOfTransfersByClientOnClick" prefHeight="25.0" prefWidth="300.0" text="Display number of transfer by client" />
+                <Button fx:id="numberOfPhoneTransfersByClient" onAction="#numberOfPhoneTransfersByClientOnClick" prefHeight="25.0" prefWidth="300.0" text="Display number of phone transfer by client" />
+                <Button fx:id="atmByMonthButton" onAction="#atmByMonthOnClick" prefHeight="25.0" prefWidth="300.0" text="Display ATM by month" />
+                <Button fx:id="atmMalfunctionsHistoryButton" onAction="#atmMalfunctionsHistoryOnClick" prefHeight="25.0" prefWidth="300.0" text="Display ATM history" />
+            <opaqueInsets>
+               <Insets />
+            </opaqueInsets>
+            <padding>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            </VBox>
+            <VBox spacing="20.0" style="-fx-border-color: lightgrey; -fx-border-width: 1px; -fx-border-radius: 20px">
+                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="300.0" text="PROCEDURES">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <Button fx:id="reportAtmMalfunctionButton" onAction="#reportAtmMalfunctionOnClick" prefHeight="25.0" prefWidth="300.0" text="Report ATM malfunction" />
+                <Button fx:id="addNewClientButton" onAction="#newClientOnClick" prefHeight="25.0" prefWidth="300.0" text="Add new client" />
+                <Button fx:id="addNewAccountButton" onAction="#newAccountOnClick" prefHeight="25.0" prefWidth="300.0" text="Add new account" />
+                <Button fx:id="addNewEmployeeButton" onAction="#newEmployeeOnClick" prefHeight="25.0" prefWidth="300.0" text="Add new employee" />
+                <Button onAction="#disactiveAccount" prefHeight="25.0" prefWidth="300.0" text="Disactivate account" />
+                <Button onAction="#backupOnClick" prefHeight="25.0" prefWidth="300.0" text="Create database backup" />
+            <padding>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            </VBox>
+            <padding>
+                <Insets top="25.0" />
+            </padding>
+        </HBox>
     </center>
+   <bottom>
+      <Label text="Copyright KP2023® " textFill="#979797" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="5.0" top="10.0" />
+         </padding></Label>
+   </bottom>
 </BorderPane>

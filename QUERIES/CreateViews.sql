@@ -34,10 +34,11 @@ IF OBJECT_ID('CardDetails', 'V') IS NOT NULL
 DROP VIEW CardDetails
 GO
 CREATE VIEW CardDetails AS(
-SELECT DISTINCT Card,
+SELECT DISTINCT CardID,
     COUNT(Amount) OVER(PARTITION BY Card) 'Operations',
-    SUM(Amount) OVER(PARTITION BY Card) 'Value'
-    FROM(
+    IsNull(SUM(Amount) OVER(PARTITION BY Card),0) 'Value'
+    FROM Cards
+    LEFT JOIN(
         SELECT Card, Amount, [Date]
         FROM Withdraws
         UNION ALL
@@ -46,7 +47,7 @@ SELECT DISTINCT Card,
         UNION ALL
         SELECT UsedCard, Amount, [Date]
         FROM Transactions
-    ) CardOperations
+    ) CardOperations ON CardOperations.Card = Cards.CardID
 )
 GO
 
