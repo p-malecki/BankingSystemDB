@@ -5,3 +5,4 @@ GUI/DBprojectGUI/pom.xml
 GUI/DBprojectGUI/.idea/misc.xml
 GUI/DBprojectGUI/.idea/dataSources.xml
 GUI/DBprojectGUI/.idea/misc.xml
+*.xml
