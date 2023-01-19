@@ -106,6 +106,6 @@ BEGIN
     SET CurrentBalance = A.CurrentBalance + i.Amount
     FROM Accounts A
     JOIN inserted i ON i.AccountID = A.AccountID
-    WHERE i.EndDate > GETDATE()
+    WHERE i.EndDate > CAST( GETDATE() AS Date )
 END
 GO

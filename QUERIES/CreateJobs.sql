@@ -22,7 +22,7 @@ BEGIN
     SET CurrentBalance = A.CurrentBalance - L.Amount
     FROM Accounts A
     JOIN Loans L ON L.AccountID = A.AccountID
-    WHERE L.EndDate = GETDATE()
+    WHERE L.EndDate = CAST( GETDATE() AS Date )
 END
 GO
 
