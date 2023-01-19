@@ -9,7 +9,7 @@ CREATE PROCEDURE addNewClient
 @allowPhoneTransfers BIT
 AS
 BEGIN
-	IF @dateOfBirth > GETDATE()
+	IF @dateOfBirth > CAST( GETDATE() AS Date )
 		RAISERROR('Date of Birth can not be in the future', 17, 1)
 	ELSE IF @dateOfBirth >  CAST(DATEADD(YEAR, -16, GETDATE()) AS DATE)
 		RAISERROR('Client must be older than the age of 16 ', 17, 1)
@@ -246,9 +246,9 @@ BEGIN
 		RAISERROR('Incorrect amount',17,1)
 	ELSE IF @frequency <= 0 OR @frequency > (DATEDIFF(day, @startDate, @endDate))
 		RAISERROR('Incorrect frequency',17,1) 
-	ELSE IF @startDate < GETDATE()
+	ELSE IF @startDate < CAST( GETDATE() AS Date )
 		RAISERROR('Start date can not be in the past', 17, 1)
-	ELSE IF @endDate < GETDATE()
+	ELSE IF @endDate < CAST( GETDATE() AS Date )
 		RAISERROR('End date can not be in the past', 17, 1)
 	ELSE
 		INSERT INTO StandingOrders VALUES
@@ -275,7 +275,7 @@ BEGIN
 		RAISERROR('Incorrect amount', 17 ,1)
 	ELSE IF NOT EXISTS(SELECT * FROM Employees WHERE EmployeeID = @servingEmployee)
 		RAISERROR('Employee does not exist',17,1)
-	ELSE IF @endDate < GETDATE()
+	ELSE IF @endDate < CAST( GETDATE() AS Date )
 		RAISERROR('Date can not be in the past', 17, 1)
 	ELSE
 		INSERT INTO Loans VALUES
@@ -309,7 +309,7 @@ AS
 BEGIN
 	IF LEN(@name) < 2
 		RAISERROR('To short name', 17, 1)
-	ELSE IF @dateOfSign > GETDATE()
+	ELSE IF @dateOfSign > CAST( GETDATE() AS Date )
 		RAISERROR('Date can not be in the future', 17, 1)
 	ELSE
 		INSERT INTO Employees VALUES
