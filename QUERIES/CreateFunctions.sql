@@ -122,7 +122,7 @@ CREATE FUNCTION AccountHistory(@account NVARCHAR(100))
 RETURNS TABLE
 AS
 RETURN(
-    SELECT ROW_NUMBER() OVER(ORDER BY Date) 'Id',*
+    SELECT ROW_NUMBER() OVER(ORDER BY Date) 'Id', Date, Amount, Operation
     FROM AllOperations
     WHERE AccountID = @account
 )
