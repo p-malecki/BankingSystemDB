@@ -64,7 +64,7 @@ GO
 CREATE PROCEDURE addNewCard
 @cardID NVARCHAR(100),
 @accountID NVARCHAR(100),
-@limit INT,
+@limit MONEY,
 @pin NVARCHAR(100)
 AS
 BEGIN
@@ -320,7 +320,7 @@ GO
 DROP PROCEDURE IF EXISTS addNewATM
 GO
 CREATE PROCEDURE addNewATM
-@currentBalance INT,
+@currentBalance MONEY,
 @supervisorDepartment INT,
 @city NVARCHAR(100)
 AS
@@ -428,7 +428,7 @@ DROP PROCEDURE IF EXISTS changeCardLimit
 GO
 CREATE PROCEDURE changeCardLimit
 @cardID NVARCHAR(100),
-@limit INT,
+@limit MONEY,
 @pin NVARCHAR(100)
 AS
 BEGIN

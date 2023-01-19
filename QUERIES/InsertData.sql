@@ -5483,7 +5483,7 @@ INSERT INTO [PhoneTransfers] (TransferID, Sender, PhoneReceiver, Amount, Title, 
 SET IDENTITY_INSERT [PhoneTransfers] OFF
 
 
-INSERT INTO [SavingAccountDetails] (AccountID, InterestRate, Frequency) VALUES
+INSERT INTO [SavingAccountDetails] (AccountID, Frequency, InterestRate) VALUES
 ('AE236837503028130721519','yearly',3.8),
 ('AE953455736311284747558','half year',4.9),
 ('AT226036253155779986','yearly',1.3),

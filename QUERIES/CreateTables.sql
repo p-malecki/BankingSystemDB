@@ -19,7 +19,7 @@ CREATE TABLE [Accounts] (
   [ClientID] INT FOREIGN KEY REFERENCES [Clients] ([ClientID]),
   [Name] NVARCHAR(100),
   [AccountType] INT FOREIGN KEY REFERENCES [AccountTypes] ([AccountType]),
-  [CurrentBalance] INT,
+  [CurrentBalance] MONEY,
   [StartDate] DATE,
   [EndDate] DATE,
   [Password] NVARCHAR(100),
@@ -30,7 +30,7 @@ CREATE TABLE [Accounts] (
 CREATE TABLE [Cards] (
   [CardID] NVARCHAR(100) PRIMARY KEY,
   [Account] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
-  [Limit] INT,
+  [Limit] MONEY,
   [PIN] NVARCHAR(100)
 )
 
@@ -45,8 +45,8 @@ CREATE TABLE [Preferences] (
 
 CREATE TABLE [SavingAccountDetails] (
   [AccountID] NVARCHAR(100) FOREIGN KEY REFERENCES [Accounts] ([AccountID]),
-  [InterestRate] NVARCHAR(100),
-  [Frequency] FLOAT,
+  [Frequency] NVARCHAR(100),
+  [InterestRate] FLOAT,
 
   INDEX IdxAccountID(AccountID)
 )
@@ -78,7 +78,7 @@ CREATE TABLE [Loans] (
 
 CREATE TABLE [ATMs] (
   [ATMID] INT IDENTITY PRIMARY KEY,
-  [CurrentBalance] INT,
+  [CurrentBalance] MONEY,
   [SupervisorDepartment] INT REFERENCES [Branches] ([BranchID]),
   [City] NVARCHAR(100)
 )
