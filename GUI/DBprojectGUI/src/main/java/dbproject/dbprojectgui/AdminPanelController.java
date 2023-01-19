@@ -96,7 +96,7 @@ public class AdminPanelController implements Initializable{
     }
 
     public void allOperationsOnClick(){
-        String query = "SELECT * FROM AllOperations";
+        String query = "SELECT * FROM AllOperations ORDER BY Date DESC";
         setupTableView(query);
     }
 
@@ -279,7 +279,7 @@ public class AdminPanelController implements Initializable{
         Optional<ArrayList<String>> result = dialog.showAndWait();
         if(result.isPresent()){
             ArrayList<String> list = result.get();
-            String query = "EXEC addNewClient '" + list.get(0) + "', CONVERT(DATE,'" + list.get(1) + "',105), '" +
+            String query = "EXEC addNewClient '" + list.get(0) + "', '" + list.get(1) + "', '" +
                     list.get(2) + "', '" + list.get(3) + "', '" + list.get(4) + "', " + list.get(5);
             System.out.println(query);
             try{
@@ -399,14 +399,14 @@ public class AdminPanelController implements Initializable{
             String query = "EXEC addNewAccount '" + list.get(0) + "', " + list.get(1) + ", '" +
                     list.get(2) + "', " + list.get(3) + ", '" + list.get(4) + "'";
             System.out.println(query);
-//            try{
-//                statement.execute(query);
-//            }
-//            catch(SQLException e){
-//                Alert alert = new Alert(Alert.AlertType.WARNING);
-//                alert.setHeaderText(e.getMessage());
-//                alert.showAndWait();
-//            }
+            try{
+                statement.execute(query);
+            }
+            catch(SQLException e){
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText(e.getMessage());
+                alert.showAndWait();
+            }
         }
     }
 
@@ -452,8 +452,7 @@ public class AdminPanelController implements Initializable{
         Optional<ArrayList<String>> result = dialog.showAndWait();
         if(result.isPresent()){
             ArrayList<String> list = result.get();
-            String query = "EXEC addNewEmployee '" + list.get(0) + "', CONVERT(DATE,'" + list.get(1) + "',105), " +
-                    list.get(2);
+            String query = "EXEC addNewEmployee '" + list.get(0) + "', '" + list.get(1) + "', " + list.get(2);
             System.out.println(query);
             try{
                 statement.execute(query);
