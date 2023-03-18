@@ -4,11 +4,10 @@ Simplified banking system database created during Computer Science bachelor's de
 
 
 ## Project description:
-###### (full version in file "bank_project_description.pdf")
-#
+###### [full version in file "bank_project_description.pdf"](https://github.com/p-malecki/BankingSystemDB/blob/main/bank_project_description.pdf) 
 
 
-###CEL ORAZ ZAŁOŻENIA PROJEKTU
+### CEL ORAZ ZAŁOŻENIA PROJEKTU
 
 Celem naszego projektu było utworzenie bazy danych systemu bankowego obsługiwanej przez aplikację 
 kliencką dla klienta banku i pracownika nadzorującego bazę tj. administratora bazy. Stworzono
@@ -22,7 +21,7 @@ mają ukończone co najmniej 16 lat. Mogą posiadać wiele kont, a każde z nich
 kredytowych (w zależności od typu konta). Dozwolone są przelewy na własne konta. Karty posiadają 
 limity tj. maksymalną sumę, którą można jednorazowo wydać.
 
-####Ograniczenia przyjęte przy projektowaniu
+#### Ograniczenia przyjęte przy projektowaniu
 
 Zakładamy uproszczony system banku, w którym operacje mają naśladować ich główne zamierzenie 
 z pominięciem szczegółów technicznych, wymagań wobec klientów (np. zdolność kredytowa) 
@@ -30,7 +29,7 @@ i ze znacznym uproszczeniem zabezpieczeń (dowolne hasło 20 znaków), które w 
 bankowym stanowią kluczowy element. Pominiętym zostało również weryfikację poprawności danych 
 do przelewów z kontami zewnętrznymi spoza naszego systemu bankowego.
 
-####Możliwości
+#### Możliwości
 
 Aplikacja dla klienta pozwala na zarządzanie kontem bankowym, wykonywanie prostych przelewów oraz
 wpłaty i wypłaty w bankomatach lokalnych oddziałów. Możliwości przepływu pieniędzy zostały 
