@@ -1,6 +1,6 @@
-# Simplified Banking Management System Database
+# Simplified Banking Management System
 
-Database project created during Computer Science bachelor's degree at Jagiellonian University.
+A database project created during Computer Science bachelor's degree at Jagiellonian University.
 
 
 ## Project description:
