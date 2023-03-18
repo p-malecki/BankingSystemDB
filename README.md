@@ -1,6 +1,6 @@
-# db_bank_project
+# Simplified Banking System Database
 
-Simplified banking system database created during Computer Science bachelor's degree at Jagiellonian University.
+Database project created during Computer Science bachelor's degree at Jagiellonian University.
 
 
 ## Project description:
