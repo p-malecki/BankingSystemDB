@@ -14,7 +14,9 @@ kliencką dla klienta banku i pracownika nadzorującego bazę tj. administratora
 i zaimplementowano szereg funkcjonalności służących do jej sprawnego zarządzania z obu perspektyw. 
 Schematyczność w obsługiwaniu różnych typów kont, klientów, bankomatów i oddziałów pozwala
 na proste dodawanie nowego podmiotu do bazy, spełniając założenia dla jego typu.
-####Struktura banku
+
+#### Struktura banku
+
 System działa dla wyimaginowanego międzynarodowego banku, posiadającego oddziały w różnych 
 krajach. Oddziałom podlegają bankomaty, w których można przeprowadzać wpłaty i wypłaty. Klienci 
 mają ukończone co najmniej 16 lat. Mogą posiadać wiele kont, a każde z nich może posiadać kilka kart 
