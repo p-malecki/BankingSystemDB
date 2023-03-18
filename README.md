@@ -4,7 +4,7 @@ Simplified banking system database created during Computer Science bachelor's de
 
 
 ## Project description:
-######(full version in file "bank_project_description.pdf")
+###### (full version in file "bank_project_description.pdf")
 #
 
 
