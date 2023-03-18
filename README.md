@@ -1,4 +1,4 @@
-# Simplified Banking System Database
+# Simplified Banking Management System Database
 
 Database project created during Computer Science bachelor's degree at Jagiellonian University.
 
